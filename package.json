@@ -21,6 +21,11 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
-    "testMatch": ["**/test/**/*.test.ts"]
+    "testMatch": [
+      "**/test/**/*.test.ts"
+    ]
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.85.0"
   }
 }
