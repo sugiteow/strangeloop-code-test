@@ -1,6 +1,16 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { config } from './config';
 
+interface SendMessageOptions {
+  model?: string;
+  maxTokens?: number;
+  system?: string;
+}
+
+interface StreamMessageOptions extends SendMessageOptions {
+  onText?: (text: string) => void;
+}
+
 export class AnthropicClient {
   private client: Anthropic;
 
@@ -8,14 +18,7 @@ export class AnthropicClient {
     this.client = new Anthropic({ apiKey: config.apiKey });
   }
 
-  async sendMessage(
-    prompt: string,
-    options: {
-      model?: string;
-      maxTokens?: number;
-      system?: string;
-    } = {}
-  ): Promise<string> {
+  async sendMessage(prompt: string, options: SendMessageOptions = {}): Promise<string> {
     const response = await this.client.messages.create({
       model: options.model ?? config.model,
       max_tokens: options.maxTokens ?? config.maxTokens,
@@ -27,26 +30,18 @@ export class AnthropicClient {
     return textBlock?.text ?? '';
   }
 
-  async streamMessage(
-    prompt: string,
-    options: {
-      model?: string;
-      maxTokens?: number;
-      system?: string;
-      onText?: (text: string) => void;
-    } = {}
-  ): Promise<string> {
-    const stream = this.client.messages.stream({
-      model: options.model ?? config.model,
-      max_tokens: options.maxTokens ?? config.maxTokens,
-      thinking: { type: 'adaptive' },
-      system: options.system,
-      messages: [{ role: 'user', content: prompt }],
-    });
-
-    stream.on('text', (delta) => {
-      options.onText?.(delta);
-    });
+  async streamMessage(prompt: string, options: StreamMessageOptions): Promise<string> {
+    const stream = this.client.messages
+      .stream({
+        model: options.model ?? config.model,
+        max_tokens: options.maxTokens ?? config.maxTokens,
+        thinking: { type: 'adaptive' },
+        system: options.system,
+        messages: [{ role: 'user', content: prompt }],
+      })
+      .on('text', (delta) => {
+        options.onText?.(delta);
+      });
 
     const final = await stream.finalMessage();
     const textBlock = final.content.find((b): b is Anthropic.TextBlock => b.type === 'text');

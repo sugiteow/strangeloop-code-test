@@ -7,12 +7,15 @@ const mockCreate = jest.fn();
 const mockStream = jest.fn();
 
 const MockAnthropic = Anthropic as jest.MockedClass<typeof Anthropic>;
-MockAnthropic.mockImplementation(() => ({
-  messages: {
-    create: mockCreate,
-    stream: mockStream,
-  },
-} as unknown as Anthropic));
+MockAnthropic.mockImplementation(
+  () =>
+    ({
+      messages: {
+        create: mockCreate,
+        stream: mockStream,
+      },
+    }) as unknown as Anthropic
+);
 
 describe('AnthropicClient', () => {
   let client: AnthropicClient;
@@ -64,9 +67,10 @@ describe('AnthropicClient', () => {
   describe('streamMessage', () => {
     it('returns the final text and calls onText for each delta', async () => {
       const onEvents: Record<string, (arg: string) => void> = {};
-      const mockStreamInstance = {
+      const mockStreamInstance: { on: jest.Mock; finalMessage: jest.Mock } = {
         on: jest.fn((event: string, cb: (arg: string) => void) => {
           onEvents[event] = cb;
+          return mockStreamInstance;
         }),
         finalMessage: jest.fn().mockResolvedValue({
           content: [{ type: 'text', text: 'streamed response' }],
