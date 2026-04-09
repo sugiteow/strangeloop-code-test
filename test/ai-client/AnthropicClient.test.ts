@@ -1,4 +1,4 @@
-import { AnthropicClient } from '../src/AnthropicClient';
+import { AnthropicClient } from '../../src/ai-client/AnthropicClient';
 
 describe('AnthropicClient (integration)', () => {
   let client: AnthropicClient;
