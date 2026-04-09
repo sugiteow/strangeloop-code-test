@@ -62,6 +62,28 @@ describe('AnthropicClient', () => {
 
       expect(result).toBe('');
     });
+
+    it('uses the constructor system prompt as default', async () => {
+      mockCreate.mockResolvedValue({ content: [{ type: 'text', text: 'response' }] });
+      const clientWithRole = new AnthropicClient('You are a financial analyst.');
+
+      await clientWithRole.sendMessage('Hi');
+
+      expect(mockCreate).toHaveBeenCalledWith(
+        expect.objectContaining({ system: 'You are a financial analyst.' })
+      );
+    });
+
+    it('overrides the constructor system prompt with the per-call system option', async () => {
+      mockCreate.mockResolvedValue({ content: [{ type: 'text', text: 'response' }] });
+      const clientWithRole = new AnthropicClient('You are a financial analyst.');
+
+      await clientWithRole.sendMessage('Hi', { system: 'You are a chef.' });
+
+      expect(mockCreate).toHaveBeenCalledWith(
+        expect.objectContaining({ system: 'You are a chef.' })
+      );
+    });
   });
 
   describe('streamMessage', () => {

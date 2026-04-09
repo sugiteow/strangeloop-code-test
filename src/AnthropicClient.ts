@@ -12,17 +12,19 @@ interface StreamMessageOptions extends SendMessageOptions {
 }
 
 export class AnthropicClient {
-  private client: Anthropic;
+  private readonly client: Anthropic;
+  private readonly systemPrompt?: string;
 
-  constructor() {
+  constructor(systemPrompt?: string) {
     this.client = new Anthropic({ apiKey: config.apiKey });
+    this.systemPrompt = systemPrompt;
   }
 
   async sendMessage(prompt: string, options: SendMessageOptions = {}): Promise<string> {
     const response = await this.client.messages.create({
       model: options.model ?? config.model,
       max_tokens: options.maxTokens ?? config.maxTokens,
-      system: options.system,
+      system: options.system ?? this.systemPrompt,
       messages: [{ role: 'user', content: prompt }],
     });
 
@@ -36,7 +38,7 @@ export class AnthropicClient {
         model: options.model ?? config.model,
         max_tokens: options.maxTokens ?? config.maxTokens,
         thinking: { type: 'adaptive' },
-        system: options.system,
+        system: options.system ?? this.systemPrompt,
         messages: [{ role: 'user', content: prompt }],
       })
       .on('text', (delta) => {
