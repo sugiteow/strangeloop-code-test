@@ -1,4 +1,4 @@
-import { FinancialAnalystAgent } from '../../src/ai-client/agent/FinancialAnalystAgent';
+import { FinancialAnalysisResult, FinancialAnalystAgent } from '../../src/ai-client/agent/FinancialAnalystAgent';
 
 const TEST_PDF = './test/agent/test-financial-update.pdf';
 
@@ -7,25 +7,24 @@ const TEST_PDF = './test/agent/test-financial-update.pdf';
  * as some sort of smoke test.
  */
 describe('FinancialAnalystAgent (integration)', () => {
-  let agent: FinancialAnalystAgent;
+  let result: FinancialAnalysisResult;
 
-  beforeAll(() => {
-    agent = new FinancialAnalystAgent();
-  });
+  beforeAll(async () => {
+    const agent = new FinancialAnalystAgent();
+    result = await agent.analyseFile(TEST_PDF);
+  }, 60000);
 
   describe('analyseFile', () => {
-    it('returns a structured financial analysis of financial-update document', async () => {
-      const result = await agent.analyseFile(TEST_PDF);
-
-      // Summary references Tesla or key financial terms
+    it('summary references Tesla or key financial terms', () => {
       const summaryLower = result.summary.toLowerCase();
       expect(
         summaryLower.includes('tesla') ||
           summaryLower.includes('revenue') ||
           summaryLower.includes('q2')
       ).toBe(true);
+    });
 
-      // Key metrics include known figures from the document
+    it('should include key metrics from the document', () => {
       const expectedMetrics = [
         { name: 'revenue', value: '22,496' },
         { name: 'operating income', value: '923' },
@@ -38,20 +37,22 @@ describe('FinancialAnalystAgent (integration)', () => {
         expect(metric).toBeDefined();
         expect(metric!.value).toContain(expected.value);
       }
+    });
 
-      // Risks mention key headwinds from the document
+    it('should include risks summary from the document', () => {
       const risksText = result.risks.join(' ').toLowerCase();
       const expectedRisks = ['deliver', 'revenue', 'tariff'];
       for (const risk of expectedRisks) {
         expect(risksText.includes(risk)).toBe(true);
       }
+    });
 
-      // Opportunities mention key tailwinds from the document
+    it('should include opportunities summary from the document', () => {
       const opportunitiesText = result.opportunities.join(' ').toLowerCase();
       const expectedOpportunities = ['service', 'energy', 'cost'];
       for (const opportunity of expectedOpportunities) {
         expect(opportunitiesText.includes(opportunity)).toBe(true);
       }
-    }, 60000);
+    });
   });
 });
