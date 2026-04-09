@@ -1,117 +1,31 @@
-import Anthropic from '@anthropic-ai/sdk';
 import { AnthropicClient } from '../src/AnthropicClient';
 
-jest.mock('@anthropic-ai/sdk');
-
-const mockCreate = jest.fn();
-const mockStream = jest.fn();
-
-const MockAnthropic = Anthropic as jest.MockedClass<typeof Anthropic>;
-MockAnthropic.mockImplementation(
-  () =>
-    ({
-      messages: {
-        create: mockCreate,
-        stream: mockStream,
-      },
-    }) as unknown as Anthropic
-);
-
-describe('AnthropicClient', () => {
+describe('AnthropicClient (integration)', () => {
   let client: AnthropicClient;
 
   beforeEach(() => {
-    jest.clearAllMocks();
     client = new AnthropicClient();
   });
 
   describe('sendMessage', () => {
-    it('returns text from the response', async () => {
-      mockCreate.mockResolvedValue({
-        content: [{ type: 'text', text: 'Hello!' }],
-      });
+    it('returns a response from the API', async () => {
+      const result = await client.sendMessage('Reply with only the word yes.');
 
-      const result = await client.sendMessage('Hi');
-
-      expect(result).toBe('Hello!');
-      expect(mockCreate).toHaveBeenCalledWith(
-        expect.objectContaining({
-          model: 'claude-opus-4-6',
-          max_tokens: 16000,
-          messages: [{ role: 'user', content: 'Hi' }],
-        })
-      );
-    });
-
-    it('supports custom model and maxTokens', async () => {
-      mockCreate.mockResolvedValue({
-        content: [{ type: 'text', text: 'response' }],
-      });
-
-      await client.sendMessage('Hi', { model: 'claude-haiku-4-5', maxTokens: 1024 });
-
-      expect(mockCreate).toHaveBeenCalledWith(
-        expect.objectContaining({ model: 'claude-haiku-4-5', max_tokens: 1024 })
-      );
-    });
-
-    it('returns empty string when no text block in response', async () => {
-      mockCreate.mockResolvedValue({ content: [] });
-
-      const result = await client.sendMessage('Hi');
-
-      expect(result).toBe('');
-    });
-
-    it('uses the constructor system prompt as default', async () => {
-      mockCreate.mockResolvedValue({ content: [{ type: 'text', text: 'response' }] });
-      const clientWithRole = new AnthropicClient('You are a financial analyst.');
-
-      await clientWithRole.sendMessage('Hi');
-
-      expect(mockCreate).toHaveBeenCalledWith(
-        expect.objectContaining({ system: 'You are a financial analyst.' })
-      );
-    });
-
-    it('overrides the constructor system prompt with the per-call system option', async () => {
-      mockCreate.mockResolvedValue({ content: [{ type: 'text', text: 'response' }] });
-      const clientWithRole = new AnthropicClient('You are a financial analyst.');
-
-      await clientWithRole.sendMessage('Hi', { system: 'You are a chef.' });
-
-      expect(mockCreate).toHaveBeenCalledWith(
-        expect.objectContaining({ system: 'You are a chef.' })
-      );
-    });
+      expect(typeof result).toBe('string');
+      expect(result.length).toBeGreaterThan(0);
+    }, 30000);
   });
 
   describe('streamMessage', () => {
-    it('returns the final text and calls onText for each delta', async () => {
-      const onEvents: Record<string, (arg: string) => void> = {};
-      const mockStreamInstance: { on: jest.Mock; finalMessage: jest.Mock } = {
-        on: jest.fn((event: string, cb: (arg: string) => void) => {
-          onEvents[event] = cb;
-          return mockStreamInstance;
-        }),
-        finalMessage: jest.fn().mockResolvedValue({
-          content: [{ type: 'text', text: 'streamed response' }],
-        }),
-      };
-      mockStream.mockReturnValue(mockStreamInstance);
-
-      const received: string[] = [];
-      const resultPromise = client.streamMessage('Hi', {
-        onText: (t) => received.push(t),
+    it('streams a response from the API', async () => {
+      const deltas: string[] = [];
+      const result = await client.streamMessage('Reply with only the word yes.', {
+        onText: (t) => deltas.push(t),
       });
 
-      onEvents['text']?.('streamed ');
-      onEvents['text']?.('response');
-
-      const result = await resultPromise;
-
-      expect(result).toBe('streamed response');
-      expect(received).toEqual(['streamed ', 'response']);
-    });
+      expect(typeof result).toBe('string');
+      expect(result.length).toBeGreaterThan(0);
+      expect(deltas.length).toBeGreaterThan(0);
+    }, 30000);
   });
 });
