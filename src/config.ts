@@ -6,4 +6,5 @@ export const config = {
   model: process.env.ANTHROPIC_MODEL ?? 'claude-opus-4-6',
   maxTokens: parseInt(process.env.ANTHROPIC_MAX_TOKENS ?? '16000', 10),
   transformerBatchSize: parseInt(process.env.TRANSFORMER_BATCH_SIZE ?? '10', 10),
+  ingestorBatchSize: parseInt(process.env.INGESTOR_BATCH_SIZE ?? '10', 10),
 };
