@@ -22,3 +22,9 @@ If you find multiple data points that correspond to the same mapped value:
 - Only include multiple values if they have different values and there is no Non-GAAP alternative.
 
 When mapping the data point, make sure to also include the field name specified from the source data.
+
+When normalising values, always abbreviate the scale to its single letter suffix:
+- Trillions → T (e.g. $1.2T)
+- Billions → B (e.g. $4.1B)
+- Millions → M (e.g. $22,496M)
+- Thousands → K (e.g. $500K)

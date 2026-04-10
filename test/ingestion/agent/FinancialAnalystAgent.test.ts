@@ -84,6 +84,13 @@ describe('FinancialAnalystAgent (integration)', () => {
         }
       });
 
+      it('should include scale information in all key metric values', () => {
+        const scalePattern = /\$|[0-9]M\b|[0-9]B\b|billion|million|%|bp/i;
+        for (const metric of result.keyMetrics) {
+          expect(metric.value).toMatch(scalePattern);
+        }
+      });
+
       it('should include risks with citations from the document', () => {
         const findRisk = (keyword: string) =>
           result.risks.find((r) => r.text.toLowerCase().includes(keyword));
@@ -199,6 +206,13 @@ describe('FinancialAnalystAgent (integration)', () => {
           expect(metric).toBeDefined();
           expect(metric!.value).toContain(expected.value);
           expect(metric!.citation).toEqual(expect.objectContaining(expected.citation));
+        }
+      });
+
+      it('should include scale information in all key metric values', () => {
+        const scalePattern = /\$|[0-9]M\b|[0-9]B\b|billion|million|%|bp/i;
+        for (const metric of result.keyMetrics) {
+          expect(metric.value).toMatch(scalePattern);
         }
       });
 

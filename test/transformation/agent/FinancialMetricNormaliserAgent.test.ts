@@ -103,6 +103,26 @@ const scenarios: {
       buybacksAndDividends: [],
     },
   },
+  {
+    name: 'values with written-out scale units',
+    description: 'should abbreviate scale units to their single letter suffix',
+    input: [
+      { name: 'Total Revenue', value: '$2.1 trillion', citation: CITATION },
+      { name: 'Net Income', value: '$4.1 billion', citation: CITATION },
+      { name: 'Operating Expenses', value: '$850 million', citation: CITATION },
+      { name: 'Buybacks', value: '$500 thousand', citation: CITATION },
+      { name: 'EPS', value: '$1.96', citation: CITATION },
+    ],
+    expected: {
+      totalRevenue: [{ sourceFieldName: 'Total Revenue', value: '$2.1T' }],
+      earningsPerShare: [{ sourceFieldName: 'EPS', value: '$1.96' }],
+      netIncome: [{ sourceFieldName: 'Net Income', value: '$4.1B' }],
+      operatingIncome: [],
+      grossMargin: [],
+      operatingExpenses: [{ sourceFieldName: 'Operating Expenses', value: '$850M' }],
+      buybacksAndDividends: [{ sourceFieldName: 'Buybacks', value: '$500K' }],
+    },
+  },
 ];
 
 describe('FinancialMetricNormaliserAgent (integration)', () => {
