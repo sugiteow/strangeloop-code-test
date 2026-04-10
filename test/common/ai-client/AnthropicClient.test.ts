@@ -36,7 +36,7 @@ describe('AnthropicClient (integration)', () => {
       expect(result).toBe('Yes');
     }, 30000);
 
-    it('reads an RTF file and returns a response from the API', async () => {
+    it('reads a non PDF file and returns a response from the API', async () => {
       const result = await client.sendMessageWithFile(
         'What is the only word in this document? Reply with that word only.',
         TEST_RTF
