@@ -28,7 +28,6 @@ describe('FinancialReportDocumentIngestor', () => {
         expect(analyseSpy).toHaveBeenCalledTimes(2);
         expect(analyseSpy).toHaveBeenCalledWith('test/TSLA-Q2-2025-Update.pdf');
         expect(analyseSpy).toHaveBeenCalledWith('test/citi_earnings_q12025.pdf');
-        expect(analyseSpy).not.toHaveBeenCalledWith(expect.stringMatching(/\.xlsx$/));
       });
     });
 
