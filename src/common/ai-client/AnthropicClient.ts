@@ -15,10 +15,6 @@ interface StreamMessageOptions extends SendMessageOptions {
   onText?: (text: string) => void;
 }
 
-interface SendMessageWithFileOptions extends SendMessageOptions {
-  schema?: z.ZodTypeAny;
-}
-
 export class AnthropicClient {
   private readonly client: Anthropic;
   private readonly systemPrompt?: string;
@@ -70,7 +66,7 @@ export class AnthropicClient {
   async sendMessageWithFile<T = string>(
     prompt: string,
     filePath: string,
-    options: SendMessageWithFileOptions = {}
+    options: SendMessageOptions = {}
   ): Promise<T> {
     const outputConfig = options.schema
       ? {
