@@ -8,6 +8,7 @@ interface SendMessageOptions {
   model?: string;
   maxTokens?: number;
   system?: string;
+  schema?: z.ZodTypeAny;
 }
 
 interface StreamMessageOptions extends SendMessageOptions {
@@ -27,15 +28,26 @@ export class AnthropicClient {
     this.systemPrompt = systemPrompt;
   }
 
-  async sendMessage(prompt: string, options: SendMessageOptions = {}): Promise<string> {
-    const response = await this.client.messages.create({
+  async sendMessage<T = string>(prompt: string, options: SendMessageOptions = {}): Promise<T> {
+    const outputConfig = options.schema
+      ? {
+          format: {
+            type: 'json_schema' as const,
+            schema: z.toJSONSchema(options.schema) as Record<string, unknown>,
+          },
+        }
+      : undefined;
+
+    const response = await this.client.beta.messages.create({
       model: options.model ?? config.model,
       max_tokens: options.maxTokens ?? config.maxTokens,
       system: options.system ?? this.systemPrompt,
       messages: [{ role: 'user', content: prompt }],
+      output_config: outputConfig,
     });
 
-    return this.extractTextResponse(response.content);
+    const text = this.extractTextResponse(response.content);
+    return (options.schema ? JSON.parse(text) : text) as T;
   }
 
   async streamMessage(prompt: string, options: StreamMessageOptions): Promise<string> {
@@ -77,7 +89,7 @@ export class AnthropicClient {
       system: options.system ?? this.systemPrompt,
       messages: [{ role: 'user', content }],
       betas: ['files-api-2025-04-14'],
-      ...(outputConfig && { output_config: outputConfig }),
+      output_config: outputConfig,
     });
 
     const text = this.extractTextResponse(response.content);
