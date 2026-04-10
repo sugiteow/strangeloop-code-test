@@ -25,7 +25,8 @@ const scenarios: {
       operatingIncome: [],
       grossMargin: [],
       operatingExpenses: [],
-      buybacksAndDividends: [],
+      buybacks: [],
+      dividends: [],
     },
   },
   {
@@ -47,7 +48,8 @@ const scenarios: {
       operatingIncome: [{ sourceFieldName: 'Operating Income', value: '$923M' }],
       grossMargin: [{ sourceFieldName: 'Gross Margin', value: '17.2%' }],
       operatingExpenses: [{ sourceFieldName: 'Operating Expenses', value: '$2,955M' }],
-      buybacksAndDividends: [{ sourceFieldName: 'Share Buybacks', value: '$0' }],
+      buybacks: [{ sourceFieldName: 'Share Buybacks', value: '$0' }],
+      dividends: [],
     },
   },
   {
@@ -68,7 +70,8 @@ const scenarios: {
       operatingIncome: [],
       grossMargin: [],
       operatingExpenses: [],
-      buybacksAndDividends: [],
+      buybacks: [],
+      dividends: [],
     },
   },
   {
@@ -100,7 +103,54 @@ const scenarios: {
       grossMargin: [],
       // Opex and Operating Costs have the same value — merged under first field name
       operatingExpenses: [{ sourceFieldName: 'Opex', value: '$2,955M' }],
-      buybacksAndDividends: [],
+      buybacks: [],
+      dividends: [],
+    },
+  },
+  {
+    name: 'fields with equivalent values expressed in different scale notations',
+    description: 'should merge fields whose values are scale-equivalent',
+    input: [
+      // different scale notation ($22.496B vs $22,496M) — same value, should merge
+      { name: 'Revenue', value: '$22.496B', citation: CITATION },
+      { name: 'Rev', value: '$22,496M', citation: CITATION },
+      // different scale notation ($2.955B vs $2,955M) — same value, should merge
+      { name: 'Opex', value: '$2.955B', citation: CITATION },
+      { name: 'Operating Costs', value: '$2,955M', citation: CITATION },
+      // different term for the same scale ($1,172 million vs $1,172M) — same value, should merge
+      { name: 'Net Profit', value: '$1,172 million', citation: CITATION },
+      { name: 'Net Earnings', value: '$1,172M', citation: CITATION },
+    ],
+    expected: {
+      totalRevenue: [{ sourceFieldName: 'Revenue', value: '$22.496B' }],
+      earningsPerShare: [],
+      netIncome: [{ sourceFieldName: 'Net Profit', value: '$1,172 million' }],
+      operatingIncome: [],
+      grossMargin: [],
+      operatingExpenses: [{ sourceFieldName: 'Opex', value: '$2.955B' }],
+      buybacks: [],
+      dividends: [],
+    },
+  },
+  {
+    name: 'fields with the same digit but different scale',
+    description: 'should keep entries separate when the same digit appears at different scales',
+    input: [
+      { name: 'Net Profit', value: '$2B', citation: CITATION },
+      { name: 'Net Earnings', value: '$2M', citation: CITATION },
+    ],
+    expected: {
+      totalRevenue: [],
+      earningsPerShare: [],
+      netIncome: [
+        { sourceFieldName: 'Net Profit', value: '$2B' },
+        { sourceFieldName: 'Net Earnings', value: '$2M' },
+      ],
+      operatingIncome: [],
+      grossMargin: [],
+      operatingExpenses: [],
+      buybacks: [],
+      dividends: [],
     },
   },
   {
@@ -120,7 +170,8 @@ const scenarios: {
       operatingIncome: [],
       grossMargin: [],
       operatingExpenses: [{ sourceFieldName: 'Operating Expenses', value: '$850M' }],
-      buybacksAndDividends: [{ sourceFieldName: 'Buybacks', value: '$500K' }],
+      buybacks: [{ sourceFieldName: 'Buybacks', value: '$500K' }],
+      dividends: [],
     },
   },
 ];
