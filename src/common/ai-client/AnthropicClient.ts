@@ -2,7 +2,7 @@ import Anthropic, { toFile } from '@anthropic-ai/sdk';
 import { createReadStream, readFileSync } from 'fs';
 import { extname } from 'path';
 import { z } from 'zod';
-import { config } from '../config';
+import { config } from '../../config';
 
 interface SendMessageOptions {
   model?: string;

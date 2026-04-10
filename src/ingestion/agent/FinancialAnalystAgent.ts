@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { z } from 'zod';
-import { AnthropicClient } from '../AnthropicClient';
+import { AnthropicClient } from '../../common/ai-client/AnthropicClient';
 
 const SYSTEM_PROMPT = readFileSync(join(__dirname, 'skills/financial-analyst.md'), 'utf-8').trim();
 
@@ -12,6 +12,8 @@ const CitationSchema = z.object({
 });
 
 const FinancialAnalysisResultSchema = z.object({
+  companyName: z.string().describe('Name of the company being analysed'),
+  reportingPeriod: z.string().describe('Reporting period covered by the document (e.g. Q2 2025)'),
   summary: z.string().describe('A concise summary of the document'),
   keyMetrics: z
     .array(z.object({ name: z.string(), value: z.string(), citation: CitationSchema }))

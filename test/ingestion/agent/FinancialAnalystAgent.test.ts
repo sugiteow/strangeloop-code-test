@@ -1,10 +1,10 @@
 import {
   FinancialAnalysisResult,
   FinancialAnalystAgent,
-} from '../../src/ai-client/agent/FinancialAnalystAgent';
+} from '../../../src/ingestion/agent/FinancialAnalystAgent';
 
-const TEST_FINANCIAL_UPDATE_PDF = './test/agent/test-financial-update.pdf';
-const TEST_EARNINGS_CALL_PDF = './test/agent/test-earning-call-transcript.pdf';
+const TEST_FINANCIAL_UPDATE_PDF = './test/ingestion/agent/test-financial-update.pdf';
+const TEST_EARNINGS_CALL_PDF = './test/ingestion/agent/test-earning-call-transcript.pdf';
 
 /*
  * Probably a bit too expensive to run this all the time. In real world, this should probably run
@@ -19,6 +19,11 @@ describe('FinancialAnalystAgent (integration)', () => {
         const agent = new FinancialAnalystAgent();
         result = await agent.analyseFile(TEST_FINANCIAL_UPDATE_PDF);
       }, 60000);
+
+      it('should identify the company and reporting period', () => {
+        expect(result.companyName).toBe('Tesla, Inc.');
+        expect(result.reportingPeriod).toBe('Q2 2025');
+      });
 
       it('summary references Tesla or key financial terms', () => {
         const summaryLower = result.summary.toLowerCase();
@@ -143,6 +148,11 @@ describe('FinancialAnalystAgent (integration)', () => {
         const agent = new FinancialAnalystAgent();
         result = await agent.analyseFile(TEST_EARNINGS_CALL_PDF);
       }, 60000);
+
+      it('should identify the company and reporting period', () => {
+        expect(result.companyName).toBe('Citigroup Inc.');
+        expect(result.reportingPeriod).toBe('Q1 2025');
+      });
 
       it('summary references Citi or key financial terms', () => {
         const summaryLower = result.summary.toLowerCase();
