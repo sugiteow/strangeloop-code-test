@@ -1,8 +1,8 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { z } from 'zod';
-import { AnthropicClient } from '../../common/ai-client/AnthropicClient';
-import { FinancialAnalysisResult } from '../../ingestion/agent/FinancialAnalystAgent';
+import { AnthropicClient } from '@src/common/ai-client/AnthropicClient';
+import { FinancialAnalysisResult } from '@src/ingestion/agent/FinancialAnalystAgent';
 
 const SYSTEM_PROMPT = readFileSync(
   join(__dirname, 'skills/financial-metric-normaliser.md'),
