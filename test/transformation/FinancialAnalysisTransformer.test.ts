@@ -1,4 +1,3 @@
-import { FinancialAnalysisResult } from '@src/ingestion/agent/FinancialAnalystAgent';
 import {
   FinancialMetricNormaliserAgent,
   NormalisedFinancialMetrics,
@@ -7,8 +6,7 @@ import {
   FinancialAnalysisTransformer,
   TransformedFinancialAnalysis,
 } from '@src/transformation/FinancialAnalysisTransformer';
-
-const CITATION = { pageNumber: 1, sectionTitle: 'Financial Summary' };
+import { financialAnalysisResultFactory } from '../factories/FinancialAnalysisResultFactory';
 
 const NORMALISED_METRICS: NormalisedFinancialMetrics = {
   totalRevenue: [{ sourceMetricNames: ['Total Revenue', 'Rev'], value: '$22,496M' }],
@@ -20,19 +18,6 @@ const NORMALISED_METRICS: NormalisedFinancialMetrics = {
   buybacks: [{ sourceMetricNames: ['Share Buybacks'], value: '$500M' }],
   dividends: [],
 };
-
-const makeAnalysisResult = (
-  companyName: string,
-  reportingPeriod: string
-): FinancialAnalysisResult => ({
-  companyName,
-  reportingPeriod,
-  summary: 'A summary.',
-  keyMetrics: [{ name: 'Total Revenue', value: '$22,496M', citation: CITATION }],
-  risks: [],
-  opportunities: [],
-  outlook: '',
-});
 
 describe('FinancialAnalysisTransformer', () => {
   const batchSize = 2;
@@ -49,14 +34,19 @@ describe('FinancialAnalysisTransformer', () => {
 
   describe('transform', () => {
     describe('when given a single result', () => {
+      const input = financialAnalysisResultFactory.build({
+        companyName: 'Tesla, Inc.',
+        reportingPeriod: 'Q2 2025',
+      });
+
       beforeAll(async () => {
         jest.clearAllMocks();
-        results = await service.transform([makeAnalysisResult('Tesla, Inc.', 'Q2 2025')]);
+        results = await service.transform([input]);
       });
 
       it('returns one transformed result', () => {
         expect(results).toHaveLength(1);
-        expect(results[0]).toBe({
+        expect(results[0]).toEqual({
           companyName: 'Tesla, Inc.',
           reportingPeriod: 'Q2 2025',
           normalisedMetrics: NORMALISED_METRICS,
@@ -66,8 +56,14 @@ describe('FinancialAnalysisTransformer', () => {
 
     describe('when given multiple results within a single batch', () => {
       const inputs = [
-        makeAnalysisResult('Tesla, Inc.', 'Q2 2025'),
-        makeAnalysisResult('Citigroup Inc.', 'Q1 2025'),
+        financialAnalysisResultFactory.build({
+          companyName: 'Tesla, Inc.',
+          reportingPeriod: 'Q2 2025',
+        }),
+        financialAnalysisResultFactory.build({
+          companyName: 'Citigroup Inc.',
+          reportingPeriod: 'Q1 2025',
+        }),
       ];
 
       beforeAll(async () => {
@@ -88,9 +84,9 @@ describe('FinancialAnalysisTransformer', () => {
 
     describe('when the number of results exceeds the batch size', () => {
       const inputs = [
-        makeAnalysisResult('Company A', 'Q1 2025'),
-        makeAnalysisResult('Company B', 'Q1 2025'),
-        makeAnalysisResult('Company C', 'Q1 2025'),
+        financialAnalysisResultFactory.build(),
+        financialAnalysisResultFactory.build(),
+        financialAnalysisResultFactory.build(),
       ];
 
       beforeAll(async () => {
