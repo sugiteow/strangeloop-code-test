@@ -38,7 +38,6 @@ describe('FinancialAnalystAgent (integration)', () => {
               pageNumber: 1,
               sectionTitle: 'Financial Summary',
               paragraphNumber: undefined,
-              lineNumber: undefined,
             },
           },
           {
@@ -48,7 +47,6 @@ describe('FinancialAnalystAgent (integration)', () => {
               pageNumber: 1,
               sectionTitle: 'Financial Summary',
               paragraphNumber: undefined,
-              lineNumber: undefined,
             },
           },
           {
@@ -58,7 +56,6 @@ describe('FinancialAnalystAgent (integration)', () => {
               pageNumber: 1,
               sectionTitle: 'Financial Summary',
               paragraphNumber: undefined,
-              lineNumber: undefined,
             },
           },
           {
@@ -68,7 +65,6 @@ describe('FinancialAnalystAgent (integration)', () => {
               pageNumber: 1,
               sectionTitle: 'Financial Summary',
               paragraphNumber: undefined,
-              lineNumber: undefined,
             },
           },
         ];
@@ -93,7 +89,6 @@ describe('FinancialAnalystAgent (integration)', () => {
           pageNumber: 2,
           sectionTitle: 'Revenue',
           paragraphNumber: 2,
-          lineNumber: 1,
         });
 
         const revenueRisk = findRisk('revenue');
@@ -102,7 +97,6 @@ describe('FinancialAnalystAgent (integration)', () => {
           pageNumber: 2,
           sectionTitle: 'Revenue',
           paragraphNumber: 2,
-          lineNumber: 1,
         });
 
         const tariffRisk = findRisk('tariff');
@@ -111,7 +105,6 @@ describe('FinancialAnalystAgent (integration)', () => {
           pageNumber: 2,
           sectionTitle: 'Profitability',
           paragraphNumber: 2,
-          lineNumber: 6,
         });
       });
 
@@ -125,7 +118,6 @@ describe('FinancialAnalystAgent (integration)', () => {
           pageNumber: 2,
           sectionTitle: 'Revenue',
           paragraphNumber: 2,
-          lineNumber: 5,
         });
 
         const energyOpportunity = findOpportunity('energy');
@@ -134,7 +126,6 @@ describe('FinancialAnalystAgent (integration)', () => {
           pageNumber: 2,
           sectionTitle: 'Profitability',
           paragraphNumber: 2,
-          lineNumber: 7,
         });
 
         const costOpportunity = findOpportunity('cost');
@@ -143,7 +134,6 @@ describe('FinancialAnalystAgent (integration)', () => {
           pageNumber: 2,
           sectionTitle: 'Profitability',
           paragraphNumber: 2,
-          lineNumber: 6,
         });
       });
     });
@@ -212,7 +202,6 @@ describe('FinancialAnalystAgent (integration)', () => {
           pageNumber: 2,
           sectionTitle: 'PRESENTATION',
           paragraphNumber: 7,
-          lineNumber: 1,
         });
 
         const tariffRisk = findRisk('tariff');
@@ -221,7 +210,6 @@ describe('FinancialAnalystAgent (integration)', () => {
           pageNumber: 2,
           sectionTitle: 'PRESENTATION',
           paragraphNumber: 7,
-          lineNumber: 1,
         });
 
         const uncertaintyRisk = findRisk('uncertainty');
@@ -230,7 +218,6 @@ describe('FinancialAnalystAgent (integration)', () => {
           pageNumber: 2,
           sectionTitle: 'PRESENTATION',
           paragraphNumber: 7,
-          lineNumber: 1,
         });
       });
 
@@ -244,7 +231,6 @@ describe('FinancialAnalystAgent (integration)', () => {
           pageNumber: 2,
           sectionTitle: 'PRESENTATION',
           paragraphNumber: 1,
-          lineNumber: 1,
         });
 
         const bankingOpportunity = findOpportunity('banking');
@@ -253,7 +239,6 @@ describe('FinancialAnalystAgent (integration)', () => {
           pageNumber: 2,
           sectionTitle: 'PRESENTATION',
           paragraphNumber: 6,
-          lineNumber: 1,
         });
 
         const marketOpportunity = findOpportunity('market');
@@ -262,7 +247,6 @@ describe('FinancialAnalystAgent (integration)', () => {
           pageNumber: 2,
           sectionTitle: 'PRESENTATION',
           paragraphNumber: 11,
-          lineNumber: 1,
         });
       });
     });

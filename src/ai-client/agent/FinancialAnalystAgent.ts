@@ -9,7 +9,6 @@ const CitationSchema = z.object({
   pageNumber: z.number().describe('Page number where the information was found'),
   sectionTitle: z.string().describe('Title of the section where the information was found'),
   paragraphNumber: z.number().optional().describe('Paragraph number within the section (if applicable)'),
-  lineNumber: z.number().optional().describe('Line number within the paragraph (if applicable)'),
 });
 
 const FinancialAnalysisResultSchema = z.object({
