@@ -10,7 +10,7 @@ const SYSTEM_PROMPT = readFileSync(
 ).trim();
 
 const NormalisedFinancialMetricSchema = z.object({
-  sourceFieldName: z.string().describe('The original field name from the source data'),
+  sourceFieldNames: z.array(z.string()).describe('The original field names from the source data — includes all merged synonyms'),
   value: z.string().describe('The value of the metric'),
 });
 
