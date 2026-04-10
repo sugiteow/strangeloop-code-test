@@ -31,10 +31,46 @@ describe('FinancialAnalystAgent (integration)', () => {
 
       it('should include key metrics from the document', () => {
         const expectedMetrics = [
-          { name: 'total revenue', value: '$22,496M (-12% YoY)' },
-          { name: 'income from operations', value: '$923M (-42% YoY)' },
-          { name: 'free cash flow', value: '$146M (-89% YoY)' },
-          { name: 'eps diluted (gaap)', value: '$0.33 (-18% YoY)' },
+          {
+            name: 'total revenue',
+            value: '$22,496M (-12% YoY)',
+            citation: {
+              pageNumber: 1,
+              sectionTitle: 'Financial Summary',
+              paragraphNumber: undefined,
+              lineNumber: undefined,
+            },
+          },
+          {
+            name: 'income from operations',
+            value: '$923M (-42% YoY)',
+            citation: {
+              pageNumber: 1,
+              sectionTitle: 'Financial Summary',
+              paragraphNumber: undefined,
+              lineNumber: undefined,
+            },
+          },
+          {
+            name: 'free cash flow',
+            value: '$146M (-89% YoY)',
+            citation: {
+              pageNumber: 1,
+              sectionTitle: 'Financial Summary',
+              paragraphNumber: undefined,
+              lineNumber: undefined,
+            },
+          },
+          {
+            name: 'eps diluted (gaap)',
+            value: '$0.33 (-18% YoY)',
+            citation: {
+              pageNumber: 1,
+              sectionTitle: 'Financial Summary',
+              paragraphNumber: undefined,
+              lineNumber: undefined,
+            },
+          },
         ];
 
         for (const expected of expectedMetrics) {
@@ -42,24 +78,73 @@ describe('FinancialAnalystAgent (integration)', () => {
             m.name.toLowerCase().includes(expected.name)
           );
           expect(metric).toBeDefined();
-          expect(metric!.value).toBe(expected.value);
+          expect(metric!.value).toContain(expected.value);
+          expect(metric!.citation).toEqual(expected.citation);
         }
       });
 
-      it('should include risks summary from the document', () => {
-        const risksText = result.risks.join(' ').toLowerCase();
-        const expectedRisks = ['deliver', 'revenue', 'tariff'];
-        for (const risk of expectedRisks) {
-          expect(risksText.includes(risk)).toBe(true);
-        }
+      it('should include risks with citations from the document', () => {
+        const findRisk = (keyword: string) =>
+          result.risks.find((r) => r.text.toLowerCase().includes(keyword));
+
+        const deliveryRisk = findRisk('deliver');
+        expect(deliveryRisk).toBeDefined();
+        expect(deliveryRisk!.citation).toEqual({
+          pageNumber: 2,
+          sectionTitle: 'Revenue',
+          paragraphNumber: 2,
+          lineNumber: 1,
+        });
+
+        const revenueRisk = findRisk('revenue');
+        expect(revenueRisk).toBeDefined();
+        expect(revenueRisk!.citation).toEqual({
+          pageNumber: 2,
+          sectionTitle: 'Revenue',
+          paragraphNumber: 2,
+          lineNumber: 1,
+        });
+
+        const tariffRisk = findRisk('tariff');
+        expect(tariffRisk).toBeDefined();
+        expect(tariffRisk!.citation).toEqual({
+          pageNumber: 2,
+          sectionTitle: 'Profitability',
+          paragraphNumber: 2,
+          lineNumber: 6,
+        });
       });
 
-      it('should include opportunities summary from the document', () => {
-        const opportunitiesText = result.opportunities.join(' ').toLowerCase();
-        const expectedOpportunities = ['service', 'energy', 'cost'];
-        for (const opportunity of expectedOpportunities) {
-          expect(opportunitiesText.includes(opportunity)).toBe(true);
-        }
+      it('should include opportunities with citations from the document', () => {
+        const findOpportunity = (keyword: string) =>
+          result.opportunities.find((o) => o.text.toLowerCase().includes(keyword));
+
+        const serviceOpportunity = findOpportunity('service');
+        expect(serviceOpportunity).toBeDefined();
+        expect(serviceOpportunity!.citation).toEqual({
+          pageNumber: 2,
+          sectionTitle: 'Revenue',
+          paragraphNumber: 2,
+          lineNumber: 5,
+        });
+
+        const energyOpportunity = findOpportunity('energy');
+        expect(energyOpportunity).toBeDefined();
+        expect(energyOpportunity!.citation).toEqual({
+          pageNumber: 2,
+          sectionTitle: 'Profitability',
+          paragraphNumber: 2,
+          lineNumber: 7,
+        });
+
+        const costOpportunity = findOpportunity('cost');
+        expect(costOpportunity).toBeDefined();
+        expect(costOpportunity!.citation).toEqual({
+          pageNumber: 2,
+          sectionTitle: 'Profitability',
+          paragraphNumber: 2,
+          lineNumber: 6,
+        });
       });
     });
 
@@ -80,11 +165,31 @@ describe('FinancialAnalystAgent (integration)', () => {
 
       it('should include key metrics from the document', () => {
         const expectedMetrics = [
-          { name: 'net income', value: '$4.1 billion' },
-          { name: 'eps', value: '$1.96' },
-          { name: 'revenue', value: '$21.6 billion (up 3% YoY)' },
-          { name: 'expenses', value: '$13.4 billion (down 5% YoY)' },
-          { name: 'cet1', value: '13.4% (preliminary)' },
+          {
+            name: 'net income',
+            value: '$4.1 billion',
+            citation: { pageNumber: 1, sectionTitle: 'PRESENTATION', paragraphNumber: 6 },
+          },
+          {
+            name: 'eps',
+            value: '$1.96',
+            citation: { pageNumber: 1, sectionTitle: 'PRESENTATION', paragraphNumber: 6 },
+          },
+          {
+            name: 'revenue',
+            value: '$21.6 billion',
+            citation: { pageNumber: 3, sectionTitle: 'PRESENTATION', paragraphNumber: 2 },
+          },
+          {
+            name: 'expenses',
+            value: '$13.4 billion',
+            citation: { pageNumber: 3, sectionTitle: 'PRESENTATION', paragraphNumber: 2 },
+          },
+          {
+            name: 'cet1',
+            value: '13.4%',
+            citation: { pageNumber: 2, sectionTitle: 'PRESENTATION', paragraphNumber: 4 },
+          },
         ];
 
         for (const expected of expectedMetrics) {
@@ -92,24 +197,73 @@ describe('FinancialAnalystAgent (integration)', () => {
             m.name.toLowerCase().includes(expected.name)
           );
           expect(metric).toBeDefined();
-          expect(metric!.value).toBe(expected.value);
+          expect(metric!.value).toContain(expected.value);
+          expect(metric!.citation).toEqual(expect.objectContaining(expected.citation));
         }
       });
 
-      it('should include risks from the document', () => {
-        const risksText = result.risks.join(' ').toLowerCase();
-        const expectedRisks = ['macro', 'tariff', 'uncertainty'];
-        for (const risk of expectedRisks) {
-          expect(risksText.includes(risk)).toBe(true);
-        }
+      it('should include risks with citations from the document', () => {
+        const findRisk = (keyword: string) =>
+          result.risks.find((r) => r.text.toLowerCase().includes(keyword));
+
+        const macroRisk = findRisk('macro');
+        expect(macroRisk).toBeDefined();
+        expect(macroRisk!.citation).toEqual({
+          pageNumber: 2,
+          sectionTitle: 'PRESENTATION',
+          paragraphNumber: 7,
+          lineNumber: 1,
+        });
+
+        const tariffRisk = findRisk('tariff');
+        expect(tariffRisk).toBeDefined();
+        expect(tariffRisk!.citation).toEqual({
+          pageNumber: 2,
+          sectionTitle: 'PRESENTATION',
+          paragraphNumber: 7,
+          lineNumber: 1,
+        });
+
+        const uncertaintyRisk = findRisk('uncertainty');
+        expect(uncertaintyRisk).toBeDefined();
+        expect(uncertaintyRisk!.citation).toEqual({
+          pageNumber: 2,
+          sectionTitle: 'PRESENTATION',
+          paragraphNumber: 7,
+          lineNumber: 1,
+        });
       });
 
-      it('should include opportunities from the document', () => {
-        const opportunitiesText = result.opportunities.join(' ').toLowerCase();
-        const expectedOpportunities = ['wealth', 'banking', 'market'];
-        for (const opportunity of expectedOpportunities) {
-          expect(opportunitiesText.includes(opportunity)).toBe(true);
-        }
+      it('should include opportunities with citations from the document', () => {
+        const findOpportunity = (keyword: string) =>
+          result.opportunities.find((o) => o.text.toLowerCase().includes(keyword));
+
+        const wealthOpportunity = findOpportunity('wealth');
+        expect(wealthOpportunity).toBeDefined();
+        expect(wealthOpportunity!.citation).toEqual({
+          pageNumber: 2,
+          sectionTitle: 'PRESENTATION',
+          paragraphNumber: 1,
+          lineNumber: 1,
+        });
+
+        const bankingOpportunity = findOpportunity('banking');
+        expect(bankingOpportunity).toBeDefined();
+        expect(bankingOpportunity!.citation).toEqual({
+          pageNumber: 2,
+          sectionTitle: 'PRESENTATION',
+          paragraphNumber: 6,
+          lineNumber: 1,
+        });
+
+        const marketOpportunity = findOpportunity('market');
+        expect(marketOpportunity).toBeDefined();
+        expect(marketOpportunity!.citation).toEqual({
+          pageNumber: 2,
+          sectionTitle: 'PRESENTATION',
+          paragraphNumber: 11,
+          lineNumber: 1,
+        });
       });
     });
   });
