@@ -8,59 +8,103 @@ import {
   TransformedFinancialAnalysis,
 } from '@src/transformation/FinancialAnalysisTransformer';
 
+const CITATION = { pageNumber: 1, sectionTitle: 'Financial Summary' };
 
+const NORMALISED_METRICS: NormalisedFinancialMetrics = {
+  totalRevenue: [{ sourceMetricNames: ['Total Revenue', 'Rev'], value: '$22,496M' }],
+  earningsPerShare: [{ sourceMetricNames: ['Diluted EPS'], value: '$0.33' }],
+  netIncome: [{ sourceMetricNames: ['Net Income'], value: '$1,172M' }],
+  operatingIncome: [],
+  grossMargin: [{ sourceMetricNames: ['Gross Margin'], value: '17.2%' }],
+  operatingExpenses: [{ sourceMetricNames: ['Opex', 'Operating Costs'], value: '$2,955M' }],
+  buybacks: [{ sourceMetricNames: ['Share Buybacks'], value: '$500M' }],
+  dividends: [],
+};
 
+const makeAnalysisResult = (
+  companyName: string,
+  reportingPeriod: string
+): FinancialAnalysisResult => ({
+  companyName,
+  reportingPeriod,
+  summary: 'A summary.',
+  keyMetrics: [{ name: 'Total Revenue', value: '$22,496M', citation: CITATION }],
+  risks: [],
+  opportunities: [],
+  outlook: '',
+});
 
 describe('FinancialAnalysisTransformer', () => {
+  const batchSize = 2;
+
   let service: FinancialAnalysisTransformer;
   let mockNormaliserAgent: FinancialMetricNormaliserAgent;
-
-  const citation = { pageNumber: 1, sectionTitle: 'Financial Summary' };
-  const financialAnalysisResult: FinancialAnalysisResult = {
-    companyName: 'Tesla, Inc.',
-    reportingPeriod: 'Q2 2025',
-    summary: 'A summary.',
-    keyMetrics: [
-      { name: 'Total Revenue', value: '$22,496M', citation: citation },
-      { name: 'Diluted EPS', value: '$0.33', citation: citation },
-    ],
-    risks: [],
-    opportunities: [],
-    outlook: '',
-  };
-
-  const expectedNormalisedMetrics: NormalisedFinancialMetrics = {
-    totalRevenue: [{ sourceMetricNames: ['Total Revenue'], value: '$22,496M' }],
-    earningsPerShare: [{ sourceMetricNames: ['Diluted EPS'], value: '$0.33' }],
-    netIncome: [],
-    operatingIncome: [],
-    grossMargin: [],
-    operatingExpenses: [],
-    buybacks: [],
-    dividends: [],
-  };
+  let results: TransformedFinancialAnalysis[];
 
   beforeAll(() => {
     mockNormaliserAgent = new FinancialMetricNormaliserAgent();
-    jest.spyOn(mockNormaliserAgent, 'normalise').mockResolvedValue(expectedNormalisedMetrics);
-    service = new FinancialAnalysisTransformer(mockNormaliserAgent);
+    jest.spyOn(mockNormaliserAgent, 'normalise').mockResolvedValue(NORMALISED_METRICS);
+    service = new FinancialAnalysisTransformer(mockNormaliserAgent, batchSize);
   });
 
   describe('transform', () => {
-    let result: TransformedFinancialAnalysis;
+    describe('when given a single result', () => {
+      beforeAll(async () => {
+        jest.clearAllMocks();
+        results = await service.transform([makeAnalysisResult('Tesla, Inc.', 'Q2 2025')]);
+      });
 
-    beforeAll(async () => {
-      result = await service.transform(financialAnalysisResult);
+      it('returns one transformed result', () => {
+        expect(results).toHaveLength(1);
+        expect(results[0]).toBe({
+          companyName: 'Tesla, Inc.',
+          reportingPeriod: 'Q2 2025',
+          normalisedMetrics: NORMALISED_METRICS,
+        });
+      });
     });
 
-    it('calls the normaliser agent with the key metrics', () => {
-      expect(mockNormaliserAgent.normalise).toHaveBeenCalledWith(financialAnalysisResult.keyMetrics);
+    describe('when given multiple results within a single batch', () => {
+      const inputs = [
+        makeAnalysisResult('Tesla, Inc.', 'Q2 2025'),
+        makeAnalysisResult('Citigroup Inc.', 'Q1 2025'),
+      ];
+
+      beforeAll(async () => {
+        jest.clearAllMocks();
+        results = await service.transform(inputs);
+      });
+
+      it('returns a transformed result for each input', () => {
+        expect(results).toHaveLength(2);
+        expect(results[0].companyName).toBe('Tesla, Inc.');
+        expect(results[1].companyName).toBe('Citigroup Inc.');
+      });
+
+      it('calls the normaliser agent once per input', () => {
+        expect(mockNormaliserAgent.normalise).toHaveBeenCalledTimes(2);
+      });
     });
 
-    it('returns company name, reporting period and normalised metrics', () => {
-      expect(result.companyName).toBe('Tesla, Inc.');
-      expect(result.reportingPeriod).toBe('Q2 2025');
-      expect(result.normalisedMetrics).toEqual(expectedNormalisedMetrics);
+    describe('when the number of results exceeds the batch size', () => {
+      const inputs = [
+        makeAnalysisResult('Company A', 'Q1 2025'),
+        makeAnalysisResult('Company B', 'Q1 2025'),
+        makeAnalysisResult('Company C', 'Q1 2025'),
+      ];
+
+      beforeAll(async () => {
+        jest.clearAllMocks();
+        results = await service.transform(inputs);
+      });
+
+      it('returns a transformed result for each input', () => {
+        expect(results).toHaveLength(3);
+      });
+
+      it('processes inputs across multiple batches', () => {
+        expect(mockNormaliserAgent.normalise).toHaveBeenCalledTimes(3);
+      });
     });
   });
 });
