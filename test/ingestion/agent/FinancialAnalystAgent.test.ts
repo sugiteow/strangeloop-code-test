@@ -1,7 +1,7 @@
 import {
   FinancialAnalysisResult,
   FinancialAnalystAgent,
-} from '../../../src/ingestion/agent/FinancialAnalystAgent';
+} from '@src/ingestion/agent/FinancialAnalystAgent';
 
 const TEST_FINANCIAL_UPDATE_PDF = './test/ingestion/agent/test-financial-update.pdf';
 const TEST_EARNINGS_CALL_PDF = './test/ingestion/agent/test-earning-call-transcript.pdf';

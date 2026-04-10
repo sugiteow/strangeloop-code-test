@@ -1,8 +1,8 @@
-import { FinancialAnalysisResult } from '../../../src/ingestion/agent/FinancialAnalystAgent';
+import { FinancialAnalysisResult } from '@src/ingestion/agent/FinancialAnalystAgent';
 import {
   FinancialMetricNormaliserAgent,
   NormalisedFinancialMetrics,
-} from '../../../src/transformation/agent/FinancialMetricNormaliserAgent';
+} from '@src/transformation/agent/FinancialMetricNormaliserAgent';
 
 type KeyMetrics = FinancialAnalysisResult['keyMetrics'];
 

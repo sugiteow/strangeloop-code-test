@@ -31,7 +31,10 @@
     "testEnvironment": "node",
     "testMatch": [
       "**/test/**/*.test.ts"
-    ]
+    ],
+    "moduleNameMapper": {
+      "^@src/(.*)$": "<rootDir>/src/$1"
+    }
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.86.1",
