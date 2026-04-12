@@ -7,15 +7,14 @@
 
 ### How To Run
 
-Once you have all pre-requisites installed, to run the full flow, just do
-`yarn test:e2e`
-from root directory of the project.
+Once you have all pre-requisites installed, run `yarn install` from root directory of the project
 
-The main "acceptance test" that exercises the requested scenario in the problem statement is
-in [financial-report-document-analyser.e2e.test](test/e2e/financial-report-document-analyser.e2e.test.ts)
+You can then run `yarn test:e2e` to run the full flow. This will
+run [financial-report-document-analyser.e2e.test](test/e2e/financial-report-document-analyser.e2e.test.ts) and create an
+output directory in test/e2e folder containing output of each individual phase of the process (see ["
+Design decisions and/or consideration"](#design-decisions-andor-considerations) for more detail on the phases)
 
-It'll create an output directory in the e2e folder containing output of each individual phase of the process (see ["
-Design decisions and/or consideration"](#design-decisions-andor-considerations) section below for more detail)
+To run the whole test you can execute `yarn test` (this will run all other test aside from e2e ones)
 
 ### Assumptions
 
@@ -30,26 +29,28 @@ Design decisions and/or consideration"](#design-decisions-andor-considerations) 
    out-of-scope)
 6. Customer will only need the output in a form that can be easily exported to excel
 7. Scoring mechanism for the company will use PwC standard with 1-5 scale and RAG (at least that's what Gemini and
-   Claude
-   thinks what the PwC standard is) designation based on typical
-   financial metrics (e.g. revenue, profit, earning per share, etc.)
+   Claude thinks what the PwC standard is) designation based on typical financial metrics (e.g. revenue, profit, earning
+   per share, etc.)
 8. The full workflow, from document ingestion, transformation and export is assumed to happen in a distinct phase (i.e.
-   they're not a single pass-through) with some sort of persistence and task scheduling mechanism in between.
+   they're not a single pass-through) with some sort of persistence and/or task scheduling mechanism in between.
 
 ### Design decisions and/or considerations
 
 1. The system is designed to have three distinct phases that happens independently, separated by a persistence and/or
    task scheduling layer. These phases are:
-    - Ingestion (automatic)
-    - Transformation (automatic)
-    - Reconciliation and export (user-driven)
+    - **Ingestion (automatic)**. Ingest the required document and extract as much information as possible.
+    - **Transformation (automatic)**. Filter, normalise and aggregate ingested data into something that satisfy user
+      requirements.
+    - **Reconciliation and export (user-driven)**. UI that allow the user to manually resolve any data discrepancies (
+      out-of-scope), and a bunch of exporters to give the exact data format that the user requires (only implemented CSV
+      for now).
 2. There's no single coordinating service created to run through the full workflow (e.g.
    DocumentAnalysisService). As a replacement, and end-to-end test that exercise the full workflow is
    added to verify that the whole process works from start to finish, and the expected output is produced.
 3. The vision of the full workflow in deployed environment will probably work like this:
     - User upload a bunch of pdf document and/or url to analyse
-    - These urls or documents is persisted in some sort of db, with the file persisted in some sort of file storage
-      system (e.g. s3) or downloaded directly from source when it needs to be ingested.
+    - These urls or documents is persisted in a db, with the file persisted in a file storage
+      system (e.g. s3) or downloaded directly from source url when it needs to be ingested.
     - These persisted urls or documents is then scheduled for ingestion.
     - A background monitoring task checks for any file needing ingesting and pick them up in batches to be ingested.
       Once it's finished, it'll persist the ingestion result and schedule it for transformation.
@@ -57,8 +58,8 @@ Design decisions and/or consideration"](#design-decisions-andor-considerations) 
       batches, and transform them. Once transformation completed, it'll then persist the result.
     - The result of the transformation will be exposed to the user through some sort of UI that allows them to easily
       see and resolve any discrepancies, and export all or a subset of it using a certain format (e.g. csv).
-4. Few advantages of these split phases:
-    - **Scalability**. As everything run separately from the main app, we can scale them as much as we want to multiple
+4. A few advantages of these split phases:
+    - **Scalability**. As everything run separately from the main app, it can be scaled as much as we want to multiple
       instance (with probably just the centralised database as the main constraint)
     - **Easier to debug and Rerun**. As each phases has their own persisted output, each phase could be observed,
       debugged, fixed and rerun independently without having to rerun the whole workflow from start to finish (e.g. if
@@ -76,14 +77,14 @@ Design decisions and/or consideration"](#design-decisions-andor-considerations) 
 5. Ingested data is designed to extract as much possibly relevant information as we can from the document. This will
    cost an extra ingestion, but will save us a lot of hassle if we decided that we needed more information in the
    future (e.g. a new customer comes in with additional requirements). It also persists the citation information of the
-   source data, so when a human needs to manually resolve some inconsistent data, we can use these citation informations
+   source data, so when a human needs to manually resolve some inconsistent data, we can use these citation information
    to point them to the relevant area in the source document.
 6. Normalisation/transformation mechanism is designed to aggregate data, but keep their source information intact, so
    it's easier for us to debug and fix AI mistakes (e.g. the AI aggregating metrics that it thinks the same, but are
    actually a different one).
 7. For simplicity, claude is used for the purpose of this code test, using hardcoded API key. Ideally, it would probably
-   better to use locally deployed LLM for this to save cost, but I feel like it would be too complicated of a setup for
-   this purpose. Hardcoded API key in the config is a smell, but it's the simplest setup for this code test purpose.
+   be better to use locally deployed LLM for this to save cost, but I feel like it would be too complicated of a setup
+   for this purpose. Hardcoded API key in the config is a smell, but it's the simplest setup for this code test purpose.
    Will be deleting the api key after we're through with the interview process.
 8. Financial metric normalisation could be done as part of the ingestion process, but I opt to do it as a separate task,
    allowing us to have a more complete, richer ingested data in case we need it for additional requirements in the
@@ -92,6 +93,12 @@ Design decisions and/or consideration"](#design-decisions-andor-considerations) 
 **Additional Note:**
 
 Most of the code is vibe-coded using claude code, with me fully driving the design and the architecture of the
-implementation. Claude is used to generate code on the implementation level with specific prompt. Instead of
+implementation.
+
+Claude is used to generate code on the implementation level with specific prompt. Instead of
 telling claude to read and implement the problem statement, I instructed it to create a class with a specific
-behaviour/function that I want.  
+behaviour/function that I want (i.e. the prompt will be something like this: "create me class A in package B that have
+does C and returns D"). After each prompt, I reviewed the generated code immediately and manually tells claude to commit
+and push the code only when I think it's good enough.
+
+At the end of the implementation a different claude agent is requested to do a final review of the whole codebase. 
