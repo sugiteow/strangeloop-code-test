@@ -13,7 +13,14 @@ const HEADERS = [
   'Buybacks',
   'Dividends',
   'Financial Health Score',
+  'RAG',
 ];
+
+const toRag = (score: number): string => {
+  if (score <= 2) return '🔴';
+  if (score === 3) return '🟡';
+  return '🟢';
+};
 
 const formatMetric = (entries: NormalisedFinancialMetric[]): string => {
   if (entries.length === 0) return '';
@@ -35,6 +42,7 @@ const toRow = (result: TransformedFinancialAnalysis): string => {
     formatMetric(m.buybacks),
     formatMetric(m.dividends),
     String(result.score),
+    toRag(result.score),
   ]
     .map((cell) => `"${cell}"`)
     .join(',');
