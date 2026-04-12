@@ -11,6 +11,15 @@ const CitationSchema = z.object({
   paragraphNumber: z.number().optional().describe('Paragraph number within the section (if applicable)'),
 });
 
+const ScoreSchema = z.object({
+  profitability: z.number().int().min(1).max(5).describe('Score based on gross margin, operating margin, and net margin relative to industry'),
+  growth: z.number().int().min(1).max(5).describe('Score based on revenue growth and EPS trend relative to industry'),
+  efficiency: z.number().int().min(1).max(5).describe('Score based on operating expense ratios and leverage relative to industry'),
+  overall: z.number().int().min(1).max(5).describe('Weighted composite score across profitability, growth, and efficiency'),
+});
+
+export type FinancialScore = z.infer<typeof ScoreSchema>;
+
 const FinancialAnalysisResultSchema = z.object({
   companyName: z.string().describe('Name of the company being analysed'),
   reportingPeriod: z.string().describe('Reporting period covered by the document (e.g. Q2 2025)'),
@@ -25,6 +34,7 @@ const FinancialAnalysisResultSchema = z.object({
     .array(z.object({ text: z.string(), citation: CitationSchema }))
     .describe('Key opportunities identified in the document'),
   outlook: z.string().describe('Forward-looking statements and overall outlook'),
+  score: ScoreSchema.describe('Financial health scores across key dimensions relative to the company\'s industry'),
 });
 
 export type FinancialAnalysisResult = z.infer<typeof FinancialAnalysisResultSchema>;

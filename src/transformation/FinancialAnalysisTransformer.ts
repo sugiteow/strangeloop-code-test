@@ -5,6 +5,7 @@ import { FinancialMetricNormaliserAgent, NormalisedFinancialMetrics } from './ag
 export interface TransformedFinancialAnalysis {
   companyName: string;
   reportingPeriod: string;
+  score: number;
   normalisedMetrics: NormalisedFinancialMetrics;
 }
 
@@ -25,6 +26,7 @@ export class FinancialAnalysisTransformer {
         batch.map(async (analysisResult) => ({
           companyName: analysisResult.companyName,
           reportingPeriod: analysisResult.reportingPeriod,
+          score: analysisResult.score.overall,
           normalisedMetrics: await this.normaliserAgent.normalise(analysisResult.keyMetrics),
         }))
       );

@@ -2,7 +2,7 @@ import { CsvExporter } from '@src/export/CsvExporter';
 import { NormalisedFinancialMetrics } from '@src/transformation/agent/FinancialMetricNormaliserAgent';
 import { TransformedFinancialAnalysis } from '@src/transformation/FinancialAnalysisTransformer';
 
-const HEADER_ROW = 'Company,Reporting Period,Total Revenue,Earnings Per Share,Net Income,Operating Income,Gross Margin,Operating Expenses,Buybacks,Dividends';
+const HEADER_ROW = 'Company,Reporting Period,Total Revenue,Earnings Per Share,Net Income,Operating Income,Gross Margin,Operating Expenses,Buybacks,Dividends,Financial Health Score';
 
 const metric = (value: string) => ({ sourceMetricNames: ['Some Metric'], value });
 
@@ -39,6 +39,8 @@ const multipleMetrics: NormalisedFinancialMetrics = {
   dividends: [metric('$100M'), metric('$120M')],
 };
 
+const score = 3;
+
 const scenarios: {
   name: string;
   normalisedMetrics: NormalisedFinancialMetrics;
@@ -47,17 +49,17 @@ const scenarios: {
   {
     name: 'empty metrics',
     normalisedMetrics: emptyMetrics,
-    expectedDataRow: '"Tesla, Inc.","Q2 2025","","","","","","","",""',
+    expectedDataRow: '"Tesla, Inc.","Q2 2025","","","","","","","","","3"',
   },
   {
     name: 'single value per field',
     normalisedMetrics: singleMetrics,
-    expectedDataRow: '"Tesla, Inc.","Q2 2025","$22,496M","$0.33","$1,172M","$923M","17.2%","$2,955M","$500M","$100M"',
+    expectedDataRow: '"Tesla, Inc.","Q2 2025","$22,496M","$0.33","$1,172M","$923M","17.2%","$2,955M","$500M","$100M","3"',
   },
   {
     name: 'multiple values per field',
     normalisedMetrics: multipleMetrics,
-    expectedDataRow: '"Tesla, Inc.","Q2 2025","Multiple values","Multiple values","Multiple values","Multiple values","Multiple values","Multiple values","Multiple values","Multiple values"',
+    expectedDataRow: '"Tesla, Inc.","Q2 2025","Multiple values","Multiple values","Multiple values","Multiple values","Multiple values","Multiple values","Multiple values","Multiple values","3"',
   },
 ];
 
@@ -69,6 +71,7 @@ describe('CsvExporter', () => {
       const input: TransformedFinancialAnalysis = {
         companyName: 'Tesla, Inc.',
         reportingPeriod: 'Q2 2025',
+        score,
         normalisedMetrics,
       };
 

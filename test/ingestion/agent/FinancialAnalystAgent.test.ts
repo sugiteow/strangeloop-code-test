@@ -25,6 +25,17 @@ describe('FinancialAnalystAgent (integration)', () => {
         expect(result.reportingPeriod).toBe('Q2 2025');
       });
 
+      it('should include a financial health score with all dimensions between 1 and 5', () => {
+        expect(result.score.profitability).toBeGreaterThanOrEqual(1);
+        expect(result.score.profitability).toBeLessThanOrEqual(5);
+        expect(result.score.growth).toBeGreaterThanOrEqual(1);
+        expect(result.score.growth).toBeLessThanOrEqual(5);
+        expect(result.score.efficiency).toBeGreaterThanOrEqual(1);
+        expect(result.score.efficiency).toBeLessThanOrEqual(5);
+        expect(result.score.overall).toBeGreaterThanOrEqual(1);
+        expect(result.score.overall).toBeLessThanOrEqual(5);
+      });
+
       it('summary references Tesla or key financial terms', () => {
         const summaryLower = result.summary.toLowerCase();
         expect(
@@ -159,6 +170,17 @@ describe('FinancialAnalystAgent (integration)', () => {
       it('should identify the company and reporting period', () => {
         expect(result.companyName).toBe('Citigroup Inc.');
         expect(result.reportingPeriod).toBe('Q1 2025');
+      });
+
+      it('should include a financial health score with all dimensions between 1 and 5', () => {
+        expect(result.score.profitability).toBeGreaterThanOrEqual(1);
+        expect(result.score.profitability).toBeLessThanOrEqual(5);
+        expect(result.score.growth).toBeGreaterThanOrEqual(1);
+        expect(result.score.growth).toBeLessThanOrEqual(5);
+        expect(result.score.efficiency).toBeGreaterThanOrEqual(1);
+        expect(result.score.efficiency).toBeLessThanOrEqual(5);
+        expect(result.score.overall).toBeGreaterThanOrEqual(1);
+        expect(result.score.overall).toBeLessThanOrEqual(5);
       });
 
       it('summary references Citi or key financial terms', () => {

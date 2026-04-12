@@ -12,6 +12,7 @@ const HEADERS = [
   'Operating Expenses',
   'Buybacks',
   'Dividends',
+  'Financial Health Score',
 ];
 
 const formatMetric = (entries: NormalisedFinancialMetric[]): string => {
@@ -33,6 +34,7 @@ const toRow = (result: TransformedFinancialAnalysis): string => {
     formatMetric(m.operatingExpenses),
     formatMetric(m.buybacks),
     formatMetric(m.dividends),
+    String(result.score),
   ]
     .map((cell) => `"${cell}"`)
     .join(',');

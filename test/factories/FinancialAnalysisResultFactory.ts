@@ -8,6 +8,8 @@ const randomReportingPeriod = () => {
   return `Q${quarter} ${year}`;
 };
 
+const randomScore = () => faker.number.int({ min: 1, max: 5 });
+
 export const financialAnalysisResultFactory = new Factory<FinancialAnalysisResult>()
   .attr('companyName', () => faker.company.name())
   .attr('reportingPeriod', () => randomReportingPeriod())
@@ -15,4 +17,10 @@ export const financialAnalysisResultFactory = new Factory<FinancialAnalysisResul
   .attr('keyMetrics', [{ name: 'Total Revenue', value: '$22,496M', citation: { pageNumber: 1, sectionTitle: 'Financial Summary' } }])
   .attr('risks', [])
   .attr('opportunities', [])
-  .attr('outlook', '');
+  .attr('outlook', '')
+  .attr('score', () => ({
+    profitability: randomScore(),
+    growth: randomScore(),
+    efficiency: randomScore(),
+    overall: randomScore(),
+  }));

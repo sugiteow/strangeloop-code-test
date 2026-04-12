@@ -49,6 +49,7 @@ describe('FinancialAnalysisTransformer', () => {
         expect(results[0]).toEqual({
           companyName: 'Tesla, Inc.',
           reportingPeriod: 'Q2 2025',
+          score: input.score.overall,
           normalisedMetrics: NORMALISED_METRICS,
         });
       });
