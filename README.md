@@ -81,6 +81,13 @@ Design decisions and/or consideration"](#design-decisions-andor-considerations) 
 6. Normalisation/transformation mechanism is designed to aggregate data, but keep their source information intact, so
    it's easier for us to debug and fix AI mistakes (e.g. the AI aggregating metrics that it thinks the same, but are
    actually a different one).
+7. For simplicity, claude is used for the purpose of this code test, using hardcoded API key. Ideally, it would probably
+   better to use locally deployed LLM for this to save cost, but I feel like it would be too complicated of a setup for
+   this purpose. Hardcoded API key in the config is a smell, but it's the simplest setup for this code test purpose.
+   Will be deleting the api key after we're through with the interview process.
+8. Financial metric normalisation could be done as part of the ingestion process, but I opt to do it as a separate task,
+   allowing us to have a more complete, richer ingested data in case we need it for additional requirements in the
+   future (It'll probably incur additional cost, but I think they are fairly minimal).
 
 **Additional Note:**
 
