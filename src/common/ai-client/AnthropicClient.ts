@@ -3,6 +3,7 @@ import { createReadStream, readFileSync } from 'fs';
 import { extname } from 'path';
 import { z } from 'zod';
 import { config } from '@src/config';
+import { BetaOutputConfig } from '@anthropic-ai/sdk/resources/beta';
 
 interface SendMessageOptions {
   model?: string;
@@ -25,15 +26,7 @@ export class AnthropicClient {
   }
 
   async sendMessage<T = string>(prompt: string, options: SendMessageOptions = {}): Promise<T> {
-    const outputConfig = options.schema
-      ? {
-          format: {
-            type: 'json_schema' as const,
-            schema: z.toJSONSchema(options.schema) as Record<string, unknown>,
-          },
-        }
-      : undefined;
-
+    const outputConfig = this.buildOutputConfig(options.schema);
     const response = await this.client.beta.messages.create({
       model: options.model ?? config.model,
       max_tokens: options.maxTokens ?? config.maxTokens,
@@ -68,15 +61,7 @@ export class AnthropicClient {
     filePath: string,
     options: SendMessageOptions = {}
   ): Promise<T> {
-    const outputConfig = options.schema
-      ? {
-          format: {
-            type: 'json_schema' as const,
-            schema: z.toJSONSchema(options.schema) as Record<string, unknown>,
-          },
-        }
-      : undefined;
-
+    const outputConfig = this.buildOutputConfig(options.schema);
     const content = await this.buildFileContent(filePath, prompt);
 
     const response = await this.client.beta.messages.create({
@@ -92,10 +77,15 @@ export class AnthropicClient {
     return (options.schema ? JSON.parse(text) : text) as T;
   }
 
+  private buildOutputConfig(schema?: z.ZodTypeAny): BetaOutputConfig | undefined {
+    if (!schema) return undefined;
+    return { format: { type: 'json_schema', schema: z.toJSONSchema(schema) } };
+  }
+
   /*
-  * Could be a bit too restrictive to only expect/parse text response (given that this is
-  * suppose to be a generic client class). But good enough for now. No need to overcomplicate things.
-  * */
+   * Could be a bit too restrictive to only expect/parse text response (given that this is
+   * suppose to be a generic client class). But good enough for now. No need to overcomplicate things.
+   * */
   private extractTextResponse(
     content: Array<Anthropic.ContentBlock | Anthropic.Beta.BetaContentBlock>
   ): string {
