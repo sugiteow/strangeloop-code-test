@@ -124,7 +124,7 @@ const scenarios: {
     expected: {
       totalRevenue: [{ sourceMetricNames: ['Revenue', 'Rev'], value: '$22.496B' }],
       earningsPerShare: [],
-      netIncome: [{ sourceMetricNames: ['Net Profit', 'Net Earnings'], value: '$1,172 million' }],
+      netIncome: [{ sourceMetricNames: ['Net Profit', 'Net Earnings'], value: '$1,172M' }],
       operatingIncome: [],
       grossMargin: [],
       operatingExpenses: [{ sourceMetricNames: ['Opex', 'Operating Costs'], value: '$2.955B' }],
