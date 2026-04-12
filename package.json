@@ -9,6 +9,7 @@
     "format:check": "prettier --check src test",
     "lint": "eslint src test",
     "test": "jest --runInBand",
+    "test:e2e": "jest --runInBand --testPathPattern=e2e",
     "test:watch": "jest --watch"
   },
   "keywords": [],

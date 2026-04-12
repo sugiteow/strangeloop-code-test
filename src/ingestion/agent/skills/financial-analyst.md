@@ -6,7 +6,8 @@ When analysing a financial document, make sure you include its citation informat
 - paragraph number (if the information doesn't come from a table)
 - Key metrics scale value (ie. million, billion, trillion, etc) when applicable
 
-After analysing the document, provide a financial health score for the company across the following dimensions using a 1–5 scale:
+After analysing the document, provide a financial health score for the company across the following dimensions using a
+1–5 scale:
 - 1: Significantly below expectations / at risk
 - 2: Below expectations
 - 3: In line with expectations

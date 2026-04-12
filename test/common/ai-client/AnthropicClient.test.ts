@@ -12,7 +12,7 @@ describe('AnthropicClient (integration)', () => {
 
   describe('sendMessage', () => {
     it('returns a response from the API', async () => {
-      const result = await client.sendMessage('Reply with only the word yes.');
+      const result = await client.sendMessage('Reply with only the word Yes.');
 
       expect(result).toBe('Yes');
     }, 30000);
@@ -20,7 +20,7 @@ describe('AnthropicClient (integration)', () => {
 
   describe('streamMessage', () => {
     it('streams a response from the API', async () => {
-      const result = await client.streamMessage('Reply with only the word yes.', {});
+      const result = await client.streamMessage('Reply with only the word Yes.', {});
 
       expect(result).toBe('Yes');
     }, 30000);

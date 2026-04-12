@@ -176,6 +176,10 @@ const scenarios: {
   },
 ];
 
+/*
+ * Probably a bit too expensive to run this all the time. In real world, this should probably run
+ * as some sort of smoke test.
+ */
 describe('FinancialMetricNormaliserAgent (integration)', () => {
   describe('normalise', () => {
     describe.each(scenarios)('when given $name', ({ description, input, expected }) => {
