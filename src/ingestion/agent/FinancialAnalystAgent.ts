@@ -12,10 +12,10 @@ const CitationSchema = z.object({
 });
 
 const ScoreSchema = z.object({
-  profitability: z.number().int().min(1).max(5).describe('Score based on gross margin, operating margin, and net margin relative to industry'),
-  growth: z.number().int().min(1).max(5).describe('Score based on revenue growth and EPS trend relative to industry'),
-  efficiency: z.number().int().min(1).max(5).describe('Score based on operating expense ratios and leverage relative to industry'),
-  overall: z.number().int().min(1).max(5).describe('Weighted composite score across profitability, growth, and efficiency'),
+  profitability: z.number().describe('Integer score (1–5) based on gross margin, operating margin, and net margin relative to industry'),
+  growth: z.number().describe('Integer score (1–5) based on revenue growth and EPS trend relative to industry'),
+  efficiency: z.number().describe('Integer score (1–5) based on operating expense ratios and leverage relative to industry'),
+  overall: z.number().describe('Weighted composite integer score (1–5) across profitability, growth, and efficiency'),
 });
 
 export type FinancialScore = z.infer<typeof ScoreSchema>;
