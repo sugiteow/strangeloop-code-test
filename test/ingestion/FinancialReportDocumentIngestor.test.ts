@@ -2,7 +2,7 @@ import { FinancialAnalystAgent } from '@src/ingestion/agent/FinancialAnalystAgen
 import { FinancialReportDocumentIngestor } from '@src/ingestion/FinancialReportDocumentIngestor';
 import { financialAnalysisResultFactory } from '../factories/FinancialAnalysisResultFactory';
 
-const TEST_DIR = './test';
+const TEST_DIR = './test/e2e';
 
 describe('FinancialReportDocumentIngestor', () => {
   let ingestor: FinancialReportDocumentIngestor;
@@ -26,8 +26,8 @@ describe('FinancialReportDocumentIngestor', () => {
 
       it('only processes PDF files', () => {
         expect(analyseSpy).toHaveBeenCalledTimes(2);
-        expect(analyseSpy).toHaveBeenCalledWith('test/TSLA-Q2-2025-Update.pdf');
-        expect(analyseSpy).toHaveBeenCalledWith('test/citi_earnings_q12025.pdf');
+        expect(analyseSpy).toHaveBeenCalledWith('test/e2e/TSLA-Q2-2025-Update.pdf');
+        expect(analyseSpy).toHaveBeenCalledWith('test/e2e/citi_earnings_q12025.pdf');
       });
     });
 

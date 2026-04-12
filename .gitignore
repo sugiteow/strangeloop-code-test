@@ -1,5 +1,6 @@
 .idea
 .DS_Store
+test/e2e/output/
 node_modules/
 dist/
 Problem Statement.pdf
