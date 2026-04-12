@@ -13,7 +13,6 @@ const HEADERS = [
   'Buybacks',
   'Dividends',
   'Financial Health Score',
-  'RAG',
 ];
 
 const toRag = (score: number): string => {
@@ -41,8 +40,7 @@ const toRow = (result: TransformedFinancialAnalysis): string => {
     formatMetric(m.operatingExpenses),
     formatMetric(m.buybacks),
     formatMetric(m.dividends),
-    String(result.score),
-    toRag(result.score),
+    `${result.score} ${toRag(result.score)}`,
   ]
     .map((cell) => `"${cell}"`)
     .join(',');
