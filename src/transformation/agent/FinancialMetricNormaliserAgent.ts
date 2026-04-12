@@ -25,6 +25,7 @@ const NormalisedFinancialMetricsSchema = z.object({
   dividends: z.array(NormalisedFinancialMetricSchema),
 });
 
+export type NormalisedFinancialMetric = z.infer<typeof NormalisedFinancialMetricSchema>;
 export type NormalisedFinancialMetrics = z.infer<typeof NormalisedFinancialMetricsSchema>;
 
 export class FinancialMetricNormaliserAgent {
