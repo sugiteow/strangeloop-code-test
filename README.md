@@ -12,9 +12,9 @@ Once you have all pre-requisites installed, to run all test, just do
 from root directory of the project.
 
 The main "acceptance test" that exercises the requested scenario in the problem statement is
-in [a relative link](test/e2e/financial-report-document-analyser.e2e.test.ts)
+in [financial-report-document-analyser.e2e.test](test/e2e/financial-report-document-analyser.e2e.test.ts)
 
-It'll create an output directory in the e2e folder containing the output of each individual stage of the process (see "
+It'll create an output directory in the e2e folder containing the output of each individual phase of the process (see "
 Design decisions and/or consideration" section below for more detail)
 
 ### Assumptions
