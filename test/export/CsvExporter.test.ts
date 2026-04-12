@@ -2,7 +2,8 @@ import { CsvExporter } from '@src/export/CsvExporter';
 import { NormalisedFinancialMetrics } from '@src/transformation/agent/FinancialMetricNormaliserAgent';
 import { TransformedFinancialAnalysis } from '@src/transformation/FinancialAnalysisTransformer';
 
-const HEADER_ROW = 'Company,Reporting Period,Total Revenue,Earnings Per Share,Net Income,Operating Income,Gross Margin,Operating Expenses,Buybacks,Dividends,Financial Health Score';
+const HEADER_ROW =
+  'Company,Reporting Period,Total Revenue,Earnings Per Share,Net Income,Operating Income,Gross Margin,Operating Expenses,Buybacks,Dividends,Financial Health Score';
 
 const metric = (value: string) => ({ sourceMetricNames: ['Some Metric'], value });
 
@@ -54,19 +55,42 @@ const scenarios: {
   {
     name: 'single value per field',
     normalisedMetrics: singleMetrics,
-    expectedDataRow: '"Tesla, Inc.","Q2 2025","$22,496M","$0.33","$1,172M","$923M","17.2%","$2,955M","$500M","$100M","3 🟡"',
+    expectedDataRow:
+      '"Tesla, Inc.","Q2 2025","$22,496M","$0.33","$1,172M","$923M","17.2%","$2,955M","$500M","$100M","3 🟡"',
   },
   {
     name: 'multiple values per field',
     normalisedMetrics: multipleMetrics,
-    expectedDataRow: '"Tesla, Inc.","Q2 2025","Multiple values","Multiple values","Multiple values","Multiple values","Multiple values","Multiple values","Multiple values","Multiple values","3 🟡"',
+    expectedDataRow:
+      '"Tesla, Inc.","Q2 2025","Multiple values","Multiple values","Multiple values","Multiple values","Multiple values","Multiple values","Multiple values","Multiple values","3 🟡"',
   },
 ];
+
+const quotedMetrics: NormalisedFinancialMetrics = {
+  ...emptyMetrics,
+  totalRevenue: [metric('"Restated" $22,496M')],
+};
 
 describe('CsvExporter', () => {
   const exporter = new CsvExporter();
 
   describe('export', () => {
+    describe('when a cell value contains double quotes', () => {
+      const input: TransformedFinancialAnalysis = {
+        companyName: 'Acme "Holdings" Ltd',
+        reportingPeriod: 'Q2 2025',
+        score,
+        normalisedMetrics: quotedMetrics,
+      };
+
+      it('escapes double quotes as per the CSV spec', () => {
+        const result = exporter.export([input]);
+        expect(result.split('\n')[1]).toBe(
+          '"Acme ""Holdings"" Ltd","Q2 2025","""Restated"" $22,496M","","","","","","","","3 🟡"'
+        );
+      });
+    });
+
     describe.each(scenarios)('when given $name', ({ normalisedMetrics, expectedDataRow }) => {
       const input: TransformedFinancialAnalysis = {
         companyName: 'Tesla, Inc.',

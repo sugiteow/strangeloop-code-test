@@ -1,4 +1,7 @@
-import { NormalisedFinancialMetric, NormalisedFinancialMetrics } from '@src/transformation/agent/FinancialMetricNormaliserAgent';
+import {
+  NormalisedFinancialMetric,
+  NormalisedFinancialMetrics,
+} from '@src/transformation/agent/FinancialMetricNormaliserAgent';
 import { TransformedFinancialAnalysis } from '@src/transformation/FinancialAnalysisTransformer';
 
 const HEADERS = [
@@ -42,7 +45,7 @@ const toRow = (result: TransformedFinancialAnalysis): string => {
     formatMetric(m.dividends),
     `${result.score} ${toRag(result.score)}`,
   ]
-    .map((cell) => `"${cell}"`)
+    .map((cell) => `"${String(cell).replace(/"/g, '""')}"`)
     .join(',');
 };
 

@@ -22,7 +22,7 @@ export class FinancialAnalysisTransformer {
 
     for (let i = 0; i < analysisResults.length; i += this.batchSize) {
       const batch = analysisResults.slice(i, i + this.batchSize);
-      const batchResults = await Promise.all(
+      const batchResults = await Promise.allSettled(
         batch.map(async (analysisResult) => ({
           companyName: analysisResult.companyName,
           reportingPeriod: analysisResult.reportingPeriod,
@@ -30,7 +30,13 @@ export class FinancialAnalysisTransformer {
           normalisedMetrics: await this.normaliserAgent.normalise(analysisResult.keyMetrics),
         }))
       );
-      results.push(...batchResults);
+      for (const result of batchResults) {
+        if (result.status === 'fulfilled') {
+          results.push(result.value);
+        } else {
+          console.error('Failed to transform analysis result:', result.reason);
+        }
+      }
     }
 
     return results;

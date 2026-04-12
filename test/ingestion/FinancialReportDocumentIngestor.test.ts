@@ -31,6 +31,30 @@ describe('FinancialReportDocumentIngestor', () => {
       });
     });
 
+    describe('when one file fails to ingest', () => {
+      let results: Awaited<ReturnType<typeof ingestor.ingestAllDocumentsOnPath>>;
+      let failingSpy: jest.SpyInstance;
+
+      beforeAll(async () => {
+        const agent = new FinancialAnalystAgent();
+        const successResult = financialAnalysisResultFactory.build({ companyName: 'Tesla, Inc.' });
+        failingSpy = jest
+          .spyOn(agent, 'analyseFile')
+          .mockResolvedValueOnce(successResult)
+          .mockRejectedValueOnce(new Error('API error'));
+        results = await new FinancialReportDocumentIngestor(agent).ingestAllDocumentsOnPath(TEST_DIR);
+      });
+
+      it('returns results for the successful files', () => {
+        expect(results).toHaveLength(1);
+        expect(results[0].companyName).toBe('Tesla, Inc.');
+      });
+
+      it('still calls analyseFile for all PDFs', () => {
+        expect(failingSpy).toHaveBeenCalledTimes(2);
+      });
+    });
+
     describe('when the number of files exceeds the batch size', () => {
       let batchedSpy: jest.SpyInstance;
 

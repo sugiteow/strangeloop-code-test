@@ -22,10 +22,16 @@ export class FinancialReportDocumentIngestor {
 
     for (let i = 0; i < filePaths.length; i += this.batchSize) {
       const batch = filePaths.slice(i, i + this.batchSize);
-      const batchResults = await Promise.all(
+      const batchResults = await Promise.allSettled(
         batch.map((filePath) => this.financialAnalystAgent.analyseFile(filePath))
       );
-      results.push(...batchResults);
+      for (const result of batchResults) {
+        if (result.status === 'fulfilled') {
+          results.push(result.value);
+        } else {
+          console.error('Failed to ingest document:', result.reason);
+        }
+      }
     }
 
     return results;

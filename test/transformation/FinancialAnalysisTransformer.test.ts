@@ -83,6 +83,27 @@ describe('FinancialAnalysisTransformer', () => {
       });
     });
 
+    describe('when one normalisation fails', () => {
+      const inputs = [
+        financialAnalysisResultFactory.build({ companyName: 'Tesla, Inc.' }),
+        financialAnalysisResultFactory.build({ companyName: 'Citigroup Inc.' }),
+      ];
+
+      beforeAll(async () => {
+        jest.clearAllMocks();
+        jest
+          .spyOn(mockNormaliserAgent, 'normalise')
+          .mockResolvedValueOnce(NORMALISED_METRICS)
+          .mockRejectedValueOnce(new Error('normalisation error'));
+        results = await service.transform(inputs);
+      });
+
+      it('returns results for the successful items', () => {
+        expect(results).toHaveLength(1);
+        expect(results[0].companyName).toBe('Tesla, Inc.');
+      });
+    });
+
     describe('when the number of results exceeds the batch size', () => {
       const inputs = [
         financialAnalysisResultFactory.build(),

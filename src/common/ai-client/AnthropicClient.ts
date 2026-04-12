@@ -100,7 +100,11 @@ export class AnthropicClient {
     content: Array<Anthropic.ContentBlock | Anthropic.Beta.BetaContentBlock>
   ): string {
     const textBlock = content.find((b) => b.type === 'text');
-    return textBlock ? textBlock.text : '';
+    if (!textBlock) {
+      const types = content.map((b) => b.type).join(', ');
+      throw new Error(`No text block in API response. Content types received: ${types || 'none'}`);
+    }
+    return textBlock.text;
   }
 
   private async buildFileContent(
