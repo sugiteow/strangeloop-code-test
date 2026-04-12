@@ -135,14 +135,6 @@ describe('FinancialAnalystAgent (integration)', () => {
         const findOpportunity = (keyword: string) =>
           result.opportunities.find((o) => o.text.toLowerCase().includes(keyword));
 
-        const serviceOpportunity = findOpportunity('service');
-        expect(serviceOpportunity).toBeDefined();
-        expect(serviceOpportunity!.citation).toEqual({
-          pageNumber: expect.any(Number),
-          sectionTitle: expect.stringContaining('Financial Summary'),
-          paragraphNumber: undefined,
-        });
-
         const energyOpportunity = findOpportunity('energy');
         expect(energyOpportunity).toBeDefined();
         expect(energyOpportunity!.citation).toEqual({

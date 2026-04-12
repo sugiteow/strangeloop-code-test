@@ -7,15 +7,15 @@
 
 ### How To Run
 
-Once you have all pre-requisites installed, to run all test, just do
-`yarn test`
+Once you have all pre-requisites installed, to run the full flow, just do
+`yarn test:e2e`
 from root directory of the project.
 
 The main "acceptance test" that exercises the requested scenario in the problem statement is
 in [financial-report-document-analyser.e2e.test](test/e2e/financial-report-document-analyser.e2e.test.ts)
 
-It'll create an output directory in the e2e folder containing the output of each individual phase of the process (see "
-Design decisions and/or consideration" section below for more detail)
+It'll create an output directory in the e2e folder containing output of each individual phase of the process (see ["
+Design decisions and/or consideration"](#design-decisions-andor-considerations) section below for more detail)
 
 ### Assumptions
 
@@ -43,10 +43,10 @@ Design decisions and/or consideration" section below for more detail)
     - Ingestion (automatic)
     - Transformation (automatic)
     - Reconciliation and export (user-driven)
-2. There's no implementation of a single coordinating service to run through the full workflow (e.g.
+2. There's no single coordinating service created to run through the full workflow (e.g.
    DocumentAnalysisService). As a replacement, and end-to-end test that exercise the full workflow is
    added to verify that the whole process works from start to finish, and the expected output is produced.
-3. The vision of the full workflow in deployed environment will probably works like this:
+3. The vision of the full workflow in deployed environment will probably work like this:
     - User upload a bunch of pdf document and/or url to analyse
     - These urls or documents is persisted in some sort of db, with the file persisted in some sort of file storage
       system (e.g. s3) or downloaded directly from source when it needs to be ingested.

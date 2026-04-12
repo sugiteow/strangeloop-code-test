@@ -8,7 +8,7 @@
     "format": "prettier --write src test",
     "format:check": "prettier --check src test",
     "lint": "eslint src test",
-    "test": "jest --runInBand",
+    "test": "jest --runInBand --testPathIgnorePatterns=/test/e2e/",
     "test:e2e": "jest --runInBand --testPathPattern=e2e",
     "test:watch": "jest --watch"
   },
@@ -35,6 +35,9 @@
     "testEnvironment": "node",
     "testMatch": [
       "**/test/**/*.test.ts"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/"
     ],
     "moduleNameMapper": {
       "^@src/(.*)$": "<rootDir>/src/$1"
