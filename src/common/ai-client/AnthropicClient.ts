@@ -1,5 +1,5 @@
-import Anthropic, { toFile } from '@anthropic-ai/sdk';
-import { createReadStream, readFileSync } from 'fs';
+import Anthropic from '@anthropic-ai/sdk';
+import { readFileSync } from 'fs';
 import { extname } from 'path';
 import { z } from 'zod';
 import { config } from '@src/config';
@@ -104,9 +104,11 @@ export class AnthropicClient {
     const ext = extname(filePath).toLowerCase();
 
     if (ext === '.pdf') {
-      const uploaded = await this.client.beta.files.upload({
-        file: await toFile(createReadStream(filePath), undefined, { type: 'application/pdf' }),
+      const fileBuffer = readFileSync(filePath);
+      const blob = Object.assign(new Blob([fileBuffer], { type: 'application/pdf' }), {
+        name: 'document.pdf',
       });
+      const uploaded = await this.client.beta.files.upload({ file: blob });
       return [
         { type: 'document', source: { type: 'file', file_id: uploaded.id } },
         { type: 'text', text: prompt },
