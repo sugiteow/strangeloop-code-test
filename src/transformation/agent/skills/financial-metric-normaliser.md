@@ -23,7 +23,8 @@ If you find multiple data points that correspond to the same mapped value:
 - If they have different values, prefer the Non-GAAP number if one is available — use only that one.
 - Only include multiple entries if they have different values and there is no Non-GAAP alternative.
 
-When mapping the data point, make sure to include all original source field names from the source data in the sourceMetricNames array.
+When mapping the data point, make sure to include all original source field names from the source data in the
+sourceMetricNames array.
 
 When normalising values, always abbreviate the scale to its single letter suffix:
 - Trillions → T (e.g. $1.2T)

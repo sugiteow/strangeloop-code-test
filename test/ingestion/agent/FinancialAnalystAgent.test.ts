@@ -83,6 +83,15 @@ describe('FinancialAnalystAgent (integration)', () => {
               paragraphNumber: undefined,
             },
           },
+          {
+            name: 'operating expenses',
+            value: /\$2,955\s*(M|million)/i,
+            citation: {
+              pageNumber: expect.any(Number),
+              sectionTitle: expect.stringContaining('Financial Summary'),
+              paragraphNumber: undefined,
+            },
+          },
         ];
 
         for (const expected of expectedMetrics) {
