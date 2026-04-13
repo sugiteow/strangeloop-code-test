@@ -89,6 +89,22 @@ const scenarios: {
       // different values — should be kept as separate entries
       { name: 'Net Profit', value: '$1,172M', citation: CITATION },
       { name: 'Net Earnings', value: '$1,393M', citation: CITATION },
+      {
+        "name": "Research and Development Expense",
+        "value": "$1,589 million (+48% YoY)",
+        "citation": {
+          "pageNumber": 24,
+          "sectionTitle": "Statement of Operations"
+        }
+      },
+      {
+        "name": "Selling, General and Administrative Expense",
+        "value": "$1,366 million (+7% YoY)",
+        "citation": {
+          "pageNumber": 24,
+          "sectionTitle": "Statement of Operations"
+        }
+      },
     ],
     expected: {
       // Revenue, Rev, Gross Sales, Turnover all have the same value — merged under first field name
@@ -149,6 +165,25 @@ const scenarios: {
       operatingIncome: [],
       grossMargin: [],
       operatingExpenses: [],
+      buybacks: [],
+      dividends: [],
+    },
+  },
+  {
+    name: 'total and breakdown metrics for the same field',
+    description: 'should use the total entry and ignore the breakdown entries',
+    input: [
+      { name: 'Total Operating Expenses', value: '$2,955M', citation: CITATION },
+      { name: 'Research and Development Expense', value: '$1,589M', citation: CITATION },
+      { name: 'Selling, General and Administrative Expense', value: '$1,366M', citation: CITATION },
+    ],
+    expected: {
+      totalRevenue: [],
+      earningsPerShare: [],
+      netIncome: [],
+      operatingIncome: [],
+      grossMargin: [],
+      operatingExpenses: [{ sourceMetricNames: ['Total Operating Expenses'], value: '$2,955M' }],
       buybacks: [],
       dividends: [],
     },
