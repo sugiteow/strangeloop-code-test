@@ -1,6 +1,6 @@
-import { mkdirSync, writeFileSync } from 'fs';
+import { mkdirSync } from 'fs';
 import { resolve } from 'path';
-import { CsvExporter } from '@src/export/CsvExporter';
+import { XlsxExporter } from '@src/export/XlsxExporter';
 import { FinancialReportDocumentIngestor } from '@src/ingestion/FinancialReportDocumentIngestor';
 import { FinancialAnalysisTransformer } from '@src/transformation/FinancialAnalysisTransformer';
 
@@ -27,10 +27,10 @@ async function main() {
   const transformedResults = await new FinancialAnalysisTransformer().transform(ingestedResults);
   console.log('Transformation complete. Exporting...');
 
-  const csv = new CsvExporter().export(transformedResults);
-  writeFileSync(`${outputDir}/analysis-result.csv`, csv);
+  const outputFile = `${outputDir}/analysis-result.xlsx`;
+  await new XlsxExporter().export(transformedResults, outputFile);
 
-  console.log(`Done. Output written to: ${outputDir}`);
+  console.log(`Done. Output written to: ${outputFile}`);
 }
 
 main().catch((err) => {

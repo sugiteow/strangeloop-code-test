@@ -3,6 +3,7 @@ import {
   NormalisedFinancialMetrics,
 } from '@src/transformation/agent/FinancialMetricNormaliserAgent';
 import { TransformedFinancialAnalysis } from '@src/transformation/FinancialAnalysisTransformer';
+import { toRag } from './formatters';
 
 const HEADERS = [
   'Company',
@@ -18,11 +19,6 @@ const HEADERS = [
   'Financial Health Score',
 ];
 
-const toRag = (score: number): string => {
-  if (score <= 2) return '🔴';
-  if (score === 3) return '🟡';
-  return '🟢';
-};
 
 const formatMetric = (entries: NormalisedFinancialMetric[]): string => {
   if (entries.length === 0) return '';
