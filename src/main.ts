@@ -9,7 +9,7 @@ const outputDir = resolve('.', '.');
 
 async function main() {
   console.log(
-    `Reading PDF documents from: ${inputDir}. This might take up to 3 minutes. Do not close this window while it runs`
+    `Reading PDF documents from: ${inputDir}. This might take a while to complete. Do not close this window while it runs...`
   );
 
   mkdirSync(outputDir, { recursive: true });
