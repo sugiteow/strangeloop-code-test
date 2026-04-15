@@ -1,6 +1,8 @@
 import { readdirSync } from 'fs';
 import { join } from 'path';
 import { config } from '@src/config';
+import { batchProcess } from '@src/common/batchProcess';
+import { logger } from '@src/common/logger';
 import { FinancialAnalystAgent, FinancialAnalysisResult } from './agent/FinancialAnalystAgent';
 
 export class FinancialReportDocumentIngestor {
@@ -17,27 +19,17 @@ export class FinancialReportDocumentIngestor {
   async ingestAllDocumentsOnPath(dirPath: string): Promise<FinancialAnalysisResult[]> {
     const filePaths = readdirSync(dirPath)
       .filter((file) => file.toLowerCase().endsWith('.pdf'))
+      .sort()
       .map((file) => join(dirPath, file));
-    const results: FinancialAnalysisResult[] = [];
 
-    const total = filePaths.length;
-    for (let i = 0; i < filePaths.length; i += this.batchSize) {
-      const batch = filePaths.slice(i, i + this.batchSize);
-      const batchResults = await Promise.allSettled(
-        batch.map((filePath, j) => {
-          console.log(`Ingesting document ${i + j + 1}/${total}: ${filePath}`);
-          return this.financialAnalystAgent.analyseFile(filePath);
-        })
-      );
-      for (const result of batchResults) {
-        if (result.status === 'fulfilled') {
-          results.push(result.value);
-        } else {
-          console.error('Failed to ingest document:', result.reason);
-        }
-      }
-    }
-
-    return results;
+    return batchProcess(
+      filePaths,
+      this.batchSize,
+      (filePath, index) => {
+        logger.info(`Ingesting document ${index + 1}/${filePaths.length}: ${filePath}`);
+        return this.financialAnalystAgent.analyseFile(filePath);
+      },
+      (reason) => logger.error('Failed to ingest document:', reason)
+    );
   }
 }

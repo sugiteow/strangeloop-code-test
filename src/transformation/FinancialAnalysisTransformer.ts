@@ -1,4 +1,6 @@
 import { config } from '@src/config';
+import { batchProcess } from '@src/common/batchProcess';
+import { logger } from '@src/common/logger';
 import { FinancialAnalysisResult } from '@src/ingestion/agent/FinancialAnalystAgent';
 import { FinancialMetricNormaliserAgent, NormalisedFinancialMetrics } from './agent/FinancialMetricNormaliserAgent';
 
@@ -15,34 +17,20 @@ export class FinancialAnalysisTransformer {
     private readonly batchSize: number = config.transformerBatchSize
   ) {}
 
-  async transform(
-    analysisResults: FinancialAnalysisResult[]
-  ): Promise<TransformedFinancialAnalysis[]> {
-    const results: TransformedFinancialAnalysis[] = [];
-
-    const total = analysisResults.length;
-    for (let i = 0; i < analysisResults.length; i += this.batchSize) {
-      const batch = analysisResults.slice(i, i + this.batchSize);
-      const batchResults = await Promise.allSettled(
-        batch.map(async (analysisResult, j) => {
-          console.log(`Transforming document ${i + j + 1}/${total}: ${analysisResult.companyName}`);
-          return {
-            companyName: analysisResult.companyName,
-            reportingPeriod: analysisResult.reportingPeriod,
-            score: analysisResult.score.overall,
-            normalisedMetrics: await this.normaliserAgent.normalise(analysisResult.keyMetrics),
-          };
-        })
-      );
-      for (const result of batchResults) {
-        if (result.status === 'fulfilled') {
-          results.push(result.value);
-        } else {
-          console.error('Failed to transform analysis result:', result.reason);
-        }
-      }
-    }
-
-    return results;
+  async transform(analysisResults: FinancialAnalysisResult[]): Promise<TransformedFinancialAnalysis[]> {
+    return batchProcess(
+      analysisResults,
+      this.batchSize,
+      async (analysisResult, index) => {
+        logger.info(`Transforming document ${index + 1}/${analysisResults.length}`);
+        return {
+          companyName: analysisResult.companyName,
+          reportingPeriod: analysisResult.reportingPeriod,
+          score: analysisResult.score.overall,
+          normalisedMetrics: await this.normaliserAgent.normalise(analysisResult.keyMetrics),
+        };
+      },
+      (reason) => logger.error('Failed to transform analysis result:', reason)
+    );
   }
 }
