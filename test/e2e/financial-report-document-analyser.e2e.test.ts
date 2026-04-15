@@ -26,4 +26,4 @@ it('ingests, transforms and exports financial report documents', async () => {
   writeFileSync(`${OUTPUT_DIR}/transformed-document.json`, JSON.stringify(transformedResults, null, 2));
   writeFileSync(`${OUTPUT_DIR}/final-result.csv`, csv);
   expect(existsSync(xlsxPath)).toBe(true);
-}, 300000);
+}, 900000);

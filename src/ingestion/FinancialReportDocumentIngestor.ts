@@ -20,10 +20,14 @@ export class FinancialReportDocumentIngestor {
       .map((file) => join(dirPath, file));
     const results: FinancialAnalysisResult[] = [];
 
+    const total = filePaths.length;
     for (let i = 0; i < filePaths.length; i += this.batchSize) {
       const batch = filePaths.slice(i, i + this.batchSize);
       const batchResults = await Promise.allSettled(
-        batch.map((filePath) => this.financialAnalystAgent.analyseFile(filePath))
+        batch.map((filePath, j) => {
+          console.log(`Ingesting document ${i + j + 1}/${total}: ${filePath}`);
+          return this.financialAnalystAgent.analyseFile(filePath);
+        })
       );
       for (const result of batchResults) {
         if (result.status === 'fulfilled') {

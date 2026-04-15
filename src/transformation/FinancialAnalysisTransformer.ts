@@ -20,15 +20,19 @@ export class FinancialAnalysisTransformer {
   ): Promise<TransformedFinancialAnalysis[]> {
     const results: TransformedFinancialAnalysis[] = [];
 
+    const total = analysisResults.length;
     for (let i = 0; i < analysisResults.length; i += this.batchSize) {
       const batch = analysisResults.slice(i, i + this.batchSize);
       const batchResults = await Promise.allSettled(
-        batch.map(async (analysisResult) => ({
-          companyName: analysisResult.companyName,
-          reportingPeriod: analysisResult.reportingPeriod,
-          score: analysisResult.score.overall,
-          normalisedMetrics: await this.normaliserAgent.normalise(analysisResult.keyMetrics),
-        }))
+        batch.map(async (analysisResult, j) => {
+          console.log(`Transforming document ${i + j + 1}/${total}: ${analysisResult.companyName}`);
+          return {
+            companyName: analysisResult.companyName,
+            reportingPeriod: analysisResult.reportingPeriod,
+            score: analysisResult.score.overall,
+            normalisedMetrics: await this.normaliserAgent.normalise(analysisResult.keyMetrics),
+          };
+        })
       );
       for (const result of batchResults) {
         if (result.status === 'fulfilled') {
